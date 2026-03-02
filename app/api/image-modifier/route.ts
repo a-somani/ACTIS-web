@@ -1,6 +1,6 @@
 import { GoogleGenAI, Modality } from '@google/genai';
 import { createClient } from '@/utils/supabase/server';
-import { NANO_BANANA_BACKEND_PROMPT, NANO_BANANA_EXPAND_USER_PROMPT } from '@/utils/constants';
+import { NANO_BANANA_BACKEND_PROMPT, createNanoBananaExpandPrompt, resolveExpandRatio } from '@/utils/constants';
 
 interface ParsedResult {
   imageBase64?: string;
@@ -45,7 +45,6 @@ export async function POST(request: Request) {
   const apiKey = process.env.NANO_BANANA_API_KEY;
   const model = process.env.NANO_BANANA_MODEL ?? 'gemini-3-pro-image-preview';
   const backendPrompt = NANO_BANANA_BACKEND_PROMPT;
-  const userPrompt = NANO_BANANA_EXPAND_USER_PROMPT;
 
   if (!apiKey) {
     return Response.json({ error: 'Nano Banana config is missing. Set NANO_BANANA_API_KEY.' }, { status: 500 });
@@ -53,9 +52,23 @@ export async function POST(request: Request) {
 
   const formData = await request.formData();
   const image = formData.get('image');
+  const targetRatio = resolveExpandRatio(formData.get('targetRatio')?.toString() ?? null);
+  const sourceRatio = formData.get('sourceRatio')?.toString();
+  const sourceWidth = Number(formData.get('sourceWidth')?.toString() ?? '');
+  const sourceHeight = Number(formData.get('sourceHeight')?.toString() ?? '');
+  const userPrompt = createNanoBananaExpandPrompt({
+    targetRatio,
+    sourceRatio: sourceRatio || undefined,
+    sourceWidth: Number.isFinite(sourceWidth) && sourceWidth > 0 ? sourceWidth : undefined,
+    sourceHeight: Number.isFinite(sourceHeight) && sourceHeight > 0 ? sourceHeight : undefined,
+  });
 
   if (!(image instanceof File)) {
     return Response.json({ error: 'Image is required.' }, { status: 400 });
+  }
+
+  if (sourceRatio && sourceRatio === targetRatio) {
+    return Response.json({ error: 'Output ratio must be different from source ratio.' }, { status: 400 });
   }
 
   if (!image.type.startsWith('image/')) {

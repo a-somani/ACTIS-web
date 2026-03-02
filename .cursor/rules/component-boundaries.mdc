@@ -1,0 +1,22 @@
+---
+description: Keep UI modules small and focused
+globs:
+  - "components/**/*.tsx"
+  - "components/**/*.ts"
+alwaysApply: true
+---
+
+# Component Boundaries
+
+- Keep each React component file under 300 lines.
+- Prefer one primary concern per file (UI rendering, data fetching, state orchestration, utility helpers).
+- If a component grows, split by concern:
+  - move pure helpers to `*-utils.ts`
+  - move async/network/state workflows to `use-*.ts` hooks
+  - move large visual sections into focused subcomponents
+- Keep prop interfaces and shared view-model types in nearby `types.ts` files when reused.
+- Favor composition over deeply nested conditionals in a single component file.
+
+# Practical Rule of Thumb
+
+When adding a new feature to an existing component, check file length first. If it is near 250+ lines, extract the new behavior into a sibling hook, utility, or presentational child component.

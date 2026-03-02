@@ -1,0 +1,17 @@
+---
+description: Apply repo frontend conventions
+globs:
+  - '**/*.{ts,tsx,js,jsx}'
+alwaysApply: true
+---
+
+# Frontend Conventions
+
+- Use `docs/code-conventions.md` as the canonical conventions document.
+- Keep React component files under 300 lines.
+- Separate concerns early:
+  - extract reusable state/effects into hooks
+  - extract helper logic into utils
+  - split large visual sections into subcomponents
+- Prefer readable, maintainable code over clever abstractions.
+- Keep styling minimal unless design-specific changes are requested.
