@@ -36,6 +36,10 @@ export async function signInWithGithub() {
 }
 
 export async function loginAnonymously() {
+  if (process.env.NODE_ENV === 'production') {
+    return { error: 'Guest login is only enabled in development.' };
+  }
+
   const supabase = await createClient();
   const { error: signInError } = await supabase.auth.signInAnonymously();
   const { error: updateUserError } = await supabase.auth.updateUser({

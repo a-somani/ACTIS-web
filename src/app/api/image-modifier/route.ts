@@ -1,6 +1,6 @@
 import { GoogleGenAI, Modality } from '@google/genai';
 import { createClient } from '@/utils/supabase/server';
-import { NANO_BANANA_BACKEND_PROMPT } from '@/utils/constants';
+import { NANO_BANANA_BACKEND_PROMPT, NANO_BANANA_EXPAND_USER_PROMPT } from '@/utils/constants';
 
 interface ParsedResult {
   imageBase64?: string;
@@ -45,6 +45,7 @@ export async function POST(request: Request) {
   const apiKey = process.env.NANO_BANANA_API_KEY;
   const model = process.env.NANO_BANANA_MODEL ?? 'gemini-3-pro-image-preview';
   const backendPrompt = NANO_BANANA_BACKEND_PROMPT;
+  const userPrompt = NANO_BANANA_EXPAND_USER_PROMPT;
 
   if (!apiKey) {
     return Response.json({ error: 'Nano Banana config is missing. Set NANO_BANANA_API_KEY.' }, { status: 500 });
@@ -52,7 +53,6 @@ export async function POST(request: Request) {
 
   const formData = await request.formData();
   const image = formData.get('image');
-  const userPrompt = formData.get('prompt');
 
   if (!(image instanceof File)) {
     return Response.json({ error: 'Image is required.' }, { status: 400 });
@@ -64,10 +64,6 @@ export async function POST(request: Request) {
 
   if (image.size > 10 * 1024 * 1024) {
     return Response.json({ error: 'Image must be 10MB or smaller.' }, { status: 400 });
-  }
-
-  if (typeof userPrompt !== 'string' || userPrompt.trim().length === 0) {
-    return Response.json({ error: 'Prompt is required.' }, { status: 400 });
   }
 
   const mergedPrompt = backendPrompt.trim().length > 0 ? `${backendPrompt}\n\nUser request: ${userPrompt}` : userPrompt;
