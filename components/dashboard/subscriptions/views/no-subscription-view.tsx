@@ -20,7 +20,7 @@ export function NoSubscriptionView() {
           </CardHeader>
           <CardContent className={'p-0'}>
             <p className="text-sm leading-6 text-muted-foreground">
-              Choose a plan to unlock AeroEdit&apos;s full capabilities.
+              Choose a plan to unlock ACTIS&apos;s full capabilities.
             </p>
           </CardContent>
           <CardFooter className={'p-0 pt-6'}>

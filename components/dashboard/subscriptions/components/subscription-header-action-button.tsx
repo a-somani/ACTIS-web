@@ -30,7 +30,7 @@ export function SubscriptionHeaderActionButton({ subscriptionId, onCanceled }: P
         toast({
           description: (
             <div className={'flex items-start gap-3'}>
-              <CircleAlert size={20} color={'#F42566'} />
+              <CircleAlert size={20} className="text-destructive" />
               <div className={'flex flex-col gap-1'}>
                 <div className={'text-primary font-medium text-sm leading-5'}>Error</div>
                 <div className={'text-muted-foreground text-sm leading-5'}>{result.error}</div>
@@ -44,7 +44,7 @@ export function SubscriptionHeaderActionButton({ subscriptionId, onCanceled }: P
       toast({
         description: (
           <div className={'flex items-center gap-3'}>
-            <CircleCheck size={20} color={'#25F497'} />
+            <CircleCheck size={20} className="text-success" />
             <div className={'flex flex-col gap-1'}>
               <span className={'text-primary font-medium text-sm leading-5'}>Cancellation scheduled</span>
               <span className={'text-muted-foreground text-sm leading-5'}>
@@ -60,7 +60,7 @@ export function SubscriptionHeaderActionButton({ subscriptionId, onCanceled }: P
       toast({
         description: (
           <div className={'flex items-start gap-3'}>
-            <CircleAlert size={20} color={'#F42566'} />
+            <CircleAlert size={20} className="text-destructive" />
             <div className={'flex flex-col gap-1'}>
               <div className={'text-primary font-medium text-sm leading-5'}>Error</div>
               <div className={'text-muted-foreground text-sm leading-5'}>

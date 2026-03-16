@@ -25,9 +25,9 @@
   opacity: 0.2;
   background: radial-gradient(
     70.71% 70.71% at 50% 50%,
-    rgba(117, 173, 255, 0.2) 0%,
-    rgba(117, 173, 255, 0) 70%,
-    rgba(117, 173, 255, 0) 100%
+    rgba(45, 212, 191, 0.25) 0%,
+    rgba(45, 212, 191, 0) 70%,
+    rgba(45, 212, 191, 0) 100%
   );
 }
 
@@ -37,7 +37,7 @@
 
 .featured-card-badge {
   position: relative;
-  background: linear-gradient(90deg, #fff800 0%, #fffecc 100%);
+  background: linear-gradient(90deg, #2dd4bf 0%, #99f6e4 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -48,7 +48,7 @@
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0) 15%,
-    rgba(255, 248, 0, 0.6) 50%,
+    rgba(45, 212, 191, 0.6) 50%,
     rgba(255, 255, 255, 0) 85%
   );
   position: absolute;
@@ -64,9 +64,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 16px 16px 0 0;
+  border-radius: 12px 12px 0 0;
   padding: 1px 1px 0;
-  background: linear-gradient(180deg, #414b4e 49.5%, rgba(65, 75, 78, 0) 100%);
+  background: linear-gradient(180deg, hsl(240 4% 22%) 49.5%, transparent 100%);
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -76,7 +76,7 @@
 
 .footer-border {
   position: relative;
-  background: linear-gradient(90deg, rgba(65, 75, 78, 0) 0%, #414b4e 49.5%, rgba(65, 75, 78, 0) 100%);
+  background: linear-gradient(90deg, transparent 0%, hsl(240 4% 22%) 49.5%, transparent 100%);
 }
 .footer-border::after {
   content: '';
@@ -87,9 +87,9 @@
   height: 1px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0) 15%,
-    rgba(255, 248, 0, 0.6) 50%,
-    rgba(255, 255, 255, 0) 85%
+    transparent 15%,
+    rgba(45, 212, 191, 0.5) 50%,
+    transparent 85%
   );
 }
 
@@ -105,7 +105,7 @@
   width: 296px;
   border-radius: 296px;
   opacity: 0.2;
-  background: #fddd35;
+  background: #14b8a6;
   filter: blur(32px);
 }
 
@@ -117,8 +117,8 @@
   left: 94px;
   top: -2px;
   border-radius: 196px;
-  opacity: 0.5;
-  background: #4d94ff;
+  opacity: 0.4;
+  background: #2dd4bf;
   filter: blur(12px);
 }
 
@@ -129,8 +129,8 @@
   left: 50%;
   margin-left: -44px;
   top: -2px;
-  background: #fff800;
-  opacity: 0.5;
+  background: #2dd4bf;
+  opacity: 0.4;
   filter: blur(12px);
 }
 
@@ -143,9 +143,9 @@
   height: 1px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0) 15%,
-    rgba(255, 248, 0, 0.6) 50%,
-    rgba(255, 255, 255, 0) 85%
+    transparent 15%,
+    rgba(45, 212, 191, 0.5) 50%,
+    transparent 85%
   );
 }
 .featured-vertical-hard-blur-bg {
@@ -157,7 +157,7 @@
   height: 280px;
   border-radius: 280px;
   opacity: 0.1;
-  background: #fff800;
+  background: #2dd4bf;
   filter: blur(48px);
 }
 
@@ -169,7 +169,7 @@
   width: 384px;
   height: 37px;
   border-radius: 384px;
-  opacity: 0.3;
-  background: #fff800;
+  opacity: 0.25;
+  background: #2dd4bf;
   filter: blur(32px);
 }

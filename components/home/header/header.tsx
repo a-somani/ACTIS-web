@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { User } from '@supabase/supabase-js';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
 interface Props {
@@ -9,25 +8,36 @@ interface Props {
 
 export default function Header({ user }: Props) {
   return (
-    <nav>
-      <div className="mx-auto max-w-7xl relative px-[32px] py-[18px] flex items-center justify-between">
-        <div className="flex flex-1 items-center justify-start">
-          <Link className="flex items-center" href={'/'}>
-            <Image className="w-auto block" src="/logo.svg" width={131} height={28} alt="AeroEdit" />
+    <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
+      <div className="mx-auto max-w-7xl px-8 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-8">
+          <Link className="flex items-center" href="/">
+            <span className="text-xl font-semibold tracking-tight text-foreground">ACTIS</span>
           </Link>
-        </div>
-        <div className="flex flex-1 items-center justify-end">
-          <div className="flex space-x-4">
-            {user?.id ? (
-              <Button variant={'secondary'} asChild={true}>
-                <Link href={'/dashboard'}>Dashboard</Link>
-              </Button>
-            ) : (
-              <Button asChild={true} variant={'secondary'}>
-                <Link href={'/login'}>Sign in</Link>
-              </Button>
-            )}
+          <div className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
+            <Link href="#how-it-works" className="transition-colors hover:text-foreground">
+              How it works
+            </Link>
+            <Link href="#pricing" className="transition-colors hover:text-foreground">
+              Pricing
+            </Link>
           </div>
+        </div>
+        <div className="flex items-center gap-3">
+          {user?.id ? (
+            <Button variant="secondary" asChild>
+              <Link href="/dashboard">Dashboard</Link>
+            </Button>
+          ) : (
+            <>
+              <Button variant="ghost" asChild className="hidden sm:inline-flex text-muted-foreground">
+                <Link href="/login">Sign in</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/signup">Get started</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </nav>

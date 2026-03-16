@@ -9,7 +9,7 @@ export function SidebarUserInfo() {
 
   return (
     <div className={'flex flex-col items-start pb-8 px-2 text-sm font-medium lg:px-4'}>
-      <Separator className={'relative mt-6 dashboard-sidebar-highlight bg-[#283031]'} />
+      <Separator className={'relative mt-6 dashboard-sidebar-highlight bg-border'} />
       <div className={'flex w-full flex-row mt-6 items-center justify-between'}>
         <div className={'flex flex-col items-start justify-center overflow-hidden text-ellipsis'}>
           <div className={'text-sm leading-5 font-semibold w-full overflow-hidden text-ellipsis'}>

@@ -17,9 +17,9 @@
   z-index: -1;
   background: linear-gradient(
     0deg,
-    rgba(255, 251, 229, 0) 0%,
-    rgba(21, 227, 227, 0.06) 35.5%,
-    rgba(255, 248, 0, 0.48) 80.5%
+    rgba(240, 253, 250, 0) 0%,
+    rgba(20, 184, 166, 0.06) 35.5%,
+    rgba(45, 212, 191, 0.35) 80.5%
   );
   filter: blur(26px);
 }
@@ -30,7 +30,7 @@
   width: 101px;
   height: 167px;
   flex-shrink: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(168, 240, 248, 0.6) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(94, 234, 212, 0.5) 100%);
   filter: blur(26px);
 }
 
@@ -45,9 +45,9 @@
   border-radius: 951px;
   background: linear-gradient(
     180deg,
-    rgba(255, 251, 229, 0) 0%,
-    rgba(21, 227, 227, 0.06) 35.5%,
-    rgba(255, 248, 0, 0.48) 80.5%
+    rgba(240, 253, 250, 0) 0%,
+    rgba(20, 184, 166, 0.06) 35.5%,
+    rgba(45, 212, 191, 0.35) 80.5%
   );
   filter: blur(100px);
 }
@@ -58,26 +58,29 @@
   width: 394px;
   height: 648px;
   flex-shrink: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(168, 240, 248, 0.6) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(94, 234, 212, 0.5) 100%);
   filter: blur(100px);
 }
 
 .dashboard-sidebar-items {
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+
   svg.lucide {
-    color: #4b4f4f;
+    color: hsl(240 4% 46%);
+    transition: color 150ms ease-out;
   }
   &.dashboard-sidebar-items-active {
-    background: #161d1d;
+    background: hsl(240 6% 12%);
     svg.lucide {
-      color: hsl(var(--primary));
+      color: hsl(174 72% 50%);
     }
   }
 }
 
 .dashboard-sidebar-items:hover {
-  background: #161d1d;
+  background: hsl(240 6% 12%);
   svg.lucide {
-    color: hsl(var(--primary));
+    color: hsl(0 0% 98%);
   }
 }
 
@@ -91,9 +94,9 @@
   top: 0;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0) 15%,
-    rgba(255, 248, 0, 0.6) 50%,
-    rgba(255, 255, 255, 0) 85%
+    transparent 15%,
+    rgba(45, 212, 191, 0.5) 50%,
+    transparent 85%
   );
 }
 
@@ -105,8 +108,8 @@
   left: 8px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0) 15%,
-    rgba(255, 248, 0, 0.6) 50%,
-    rgba(255, 255, 255, 0) 85%
+    transparent 15%,
+    rgba(45, 212, 191, 0.5) 50%,
+    transparent 85%
   );
 }

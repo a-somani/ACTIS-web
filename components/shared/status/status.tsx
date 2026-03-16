@@ -10,17 +10,17 @@ interface StatusInfo {
 }
 // Ensure that any new colors are added to `safelist` in tailwind.config.js
 const StatusInfo: StatusInfo = {
-  active: { color: '#25F497', icon: <Check size={16} />, text: 'Active' },
-  paid: { color: '#25F497', icon: <Check size={16} />, text: 'Paid' },
-  completed: { color: '#25F497', icon: <Check size={16} />, text: 'Completed' },
-  trialing: { color: '#E0E0EB', icon: <Clock4 size={16} />, text: 'Trialing' },
-  draft: { color: '#797C7C', icon: <SquarePen size={16} />, text: 'Draft' },
-  ready: { color: '#797C7C', icon: <SquarePen size={16} />, text: 'Ready' },
-  canceled: { color: '#797C7C', icon: <CircleMinus size={16} />, text: 'Canceled' },
-  inactive: { color: '#F42566', icon: <CircleMinus size={16} />, text: 'Inactive' },
-  past_due: { color: '#F42566', icon: <Clock4 size={16} />, text: 'Past due' },
-  paused: { color: '#F79636', icon: <Pause size={16} />, text: 'Paused' },
-  billed: { color: '#F79636', icon: <Clock4 size={16} />, text: 'Unpaid invoice' },
+  active: { color: 'hsl(142 71% 45%)', icon: <Check size={16} />, text: 'Active' },
+  paid: { color: 'hsl(142 71% 45%)', icon: <Check size={16} />, text: 'Paid' },
+  completed: { color: 'hsl(142 71% 45%)', icon: <Check size={16} />, text: 'Completed' },
+  trialing: { color: 'hsl(240 5% 90%)', icon: <Clock4 size={16} />, text: 'Trialing' },
+  draft: { color: 'hsl(240 4% 65%)', icon: <SquarePen size={16} />, text: 'Draft' },
+  ready: { color: 'hsl(240 4% 65%)', icon: <SquarePen size={16} />, text: 'Ready' },
+  canceled: { color: 'hsl(240 4% 65%)', icon: <CircleMinus size={16} />, text: 'Canceled' },
+  inactive: { color: 'hsl(0 72% 51%)', icon: <CircleMinus size={16} />, text: 'Inactive' },
+  past_due: { color: 'hsl(0 72% 51%)', icon: <Clock4 size={16} />, text: 'Past due' },
+  paused: { color: 'hsl(38 92% 50%)', icon: <Pause size={16} />, text: 'Paused' },
+  billed: { color: 'hsl(38 92% 50%)', icon: <Clock4 size={16} />, text: 'Unpaid invoice' },
 };
 
 export function Status({ status }: Props) {

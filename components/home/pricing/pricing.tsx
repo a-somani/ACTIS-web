@@ -29,9 +29,19 @@ export function Pricing({ country }: Props) {
   }, []);
 
   return (
-    <div className="mx-auto max-w-7xl relative px-[32px] flex flex-col items-center justify-between">
-      <Toggle frequency={frequency} setFrequency={setFrequency} />
+    <section id="pricing" className="mx-auto max-w-7xl relative px-8 py-20 md:py-28">
+      <div className="text-center mb-14">
+        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
+          Simple, transparent pricing
+        </h2>
+        <p className="mt-4 text-muted-foreground text-lg max-w-xl mx-auto">
+          Start free. Scale when you need to. No surprises.
+        </p>
+      </div>
+      <div className="flex justify-center mb-10">
+        <Toggle frequency={frequency} setFrequency={setFrequency} />
+      </div>
       <PriceCards frequency={frequency} loading={loading} priceMap={prices} />
-    </div>
+    </section>
   );
 }

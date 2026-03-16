@@ -1,5 +1,4 @@
 import { SuccessPageGradients } from '@/components/gradients/success-page-gradients';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { PoweredByPaddle } from '@/components/home/footer/powered-by-paddle';
@@ -16,13 +15,11 @@ export default async function SuccessPage() {
         <SuccessPageGradients />
         <div className={'absolute inset-0 px-6 flex items-center justify-center'}>
           <div className={'flex flex-col items-center text-white text-center'}>
-            <Image
-              className={'pb-12'}
-              src={'/assets/icons/logo/aeroedit-success-icon.svg'}
-              alt={'Success icon'}
-              height={96}
-              width={96}
-            />
+            <div className="pb-12 flex items-center justify-center w-24 h-24 rounded-full bg-primary/10">
+              <svg className="w-12 h-12 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
             <h1 className={'text-4xl md:text-[80px] leading-9 md:leading-[80px] font-medium pb-6'}>
               Payment successful
             </h1>

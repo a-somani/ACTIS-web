@@ -21,7 +21,7 @@ export interface BatchImageItem {
 interface UseImageModifierBatchResult {
   items: BatchImageItem[];
   isGeneratingAll: boolean;
-  addFiles: (files: File[]) => Promise<void>;
+  addFiles: (files: File[]) => void;
   removeItem: (itemId: string) => void;
   clearAll: () => void;
   generateItem: (itemId: string, targetRatio: string) => Promise<void>;
@@ -85,30 +85,36 @@ export function useImageModifierBatch(): UseImageModifierBatchResult {
     };
   }, []);
 
-  const addFiles = async (files: File[]) => {
+  const addFiles = (files: File[]) => {
     const validFiles = files.filter(canUseFile);
     if (!validFiles.length) {
       return;
     }
 
-    const nextItems = await Promise.all(
-      validFiles.map(async (file) => {
-        const previewUrl = URL.createObjectURL(file);
-        const originalImageMeta = await loadImageMeta(previewUrl);
-        return {
-          id: createItemId(),
-          file,
-          previewUrl,
-          originalImageMeta,
-          status: 'ready' as const,
-          progress: null,
-          resultImage: null,
-          error: null,
-        };
-      }),
-    );
+    const nextItems: BatchImageItem[] = validFiles.map((file) => {
+      const previewUrl = URL.createObjectURL(file);
+      return {
+        id: createItemId(),
+        file,
+        previewUrl,
+        originalImageMeta: null,
+        status: 'ready' as const,
+        progress: null,
+        resultImage: null,
+        error: null,
+      };
+    });
 
     setItems((previous) => [...previous, ...nextItems]);
+
+    for (const item of nextItems) {
+      loadImageMeta(item.previewUrl).then((meta) => {
+        if (!meta) return;
+        setItems((previous) =>
+          previous.map((candidate) => (candidate.id === item.id ? { ...candidate, originalImageMeta: meta } : candidate)),
+        );
+      });
+    }
   };
 
   const removeItem = (itemId: string) => {

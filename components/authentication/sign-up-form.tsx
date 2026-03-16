@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -51,7 +50,7 @@ export function SignupForm() {
   if (emailSent) {
     return (
       <div className={'px-6 md:px-16 pb-6 py-8 gap-6 flex flex-col items-center justify-center'}>
-        <Image src={'/assets/icons/logo/aeroedit-icon.svg'} alt={'AeroEdit'} width={80} height={80} />
+        <span className="text-3xl font-bold tracking-tight text-foreground">ACTIS</span>
         <div className={'text-[30px] leading-[36px] font-medium tracking-[-0.6px] text-center'}>Check your email</div>
         <p className={'text-sm text-center text-muted-foreground'}>
           We sent a confirmation link to your email. Click it to activate your account, then log in.
@@ -65,7 +64,7 @@ export function SignupForm() {
 
   return (
     <form action={'#'} className={'px-6 md:px-16 pb-6 py-8 gap-6 flex flex-col items-center justify-center'}>
-      <Image src={'/assets/icons/logo/aeroedit-icon.svg'} alt={'AeroEdit'} width={80} height={80} />
+      <span className="text-3xl font-bold tracking-tight text-foreground">ACTIS</span>
       <div className={'text-[30px] leading-[36px] font-medium tracking-[-0.6px] text-center'}>Create an account</div>
       <AuthenticationForm
         email={email}

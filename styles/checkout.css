@@ -27,9 +27,9 @@
   height: 1px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0) 15%,
-    rgba(255, 248, 0, 0.6) 50%,
-    rgba(255, 255, 255, 0) 85%
+    transparent 15%,
+    rgba(45, 212, 191, 0.5) 50%,
+    transparent 85%
   );
 }
 
@@ -39,7 +39,7 @@
   position: absolute;
   left: 103px;
   top: -2px;
-  background: #fff800;
+  background: #2dd4bf;
   opacity: 0.1;
   filter: blur(12px);
 }
@@ -51,8 +51,8 @@
   left: 52px;
   top: -9px;
   border-radius: 296px;
-  opacity: 0.3;
-  background: #fff800;
+  opacity: 0.25;
+  background: #2dd4bf;
   filter: blur(32px);
 }
 
@@ -61,9 +61,9 @@
   height: 245px;
   background: linear-gradient(
     0deg,
-    rgba(255, 251, 229, 0) 0%,
-    rgba(21, 227, 227, 0.06) 35.5%,
-    rgba(255, 248, 0, 0.48) 80.5%
+    rgba(240, 253, 250, 0) 0%,
+    rgba(20, 184, 166, 0.06) 35.5%,
+    rgba(45, 212, 191, 0.35) 80.5%
   );
   filter: blur(26px);
 }
@@ -73,7 +73,7 @@
   position: absolute;
   width: 101px;
   height: 167px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(168, 240, 248, 0.6) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(94, 234, 212, 0.5) 100%);
   filter: blur(26px);
 }
 
@@ -108,9 +108,9 @@
   height: 1px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0) 15%,
-    rgba(255, 248, 0, 0.6) 50%,
-    rgba(255, 255, 255, 0) 85%
+    transparent 15%,
+    rgba(45, 212, 191, 0.5) 50%,
+    transparent 85%
   );
 }
 
@@ -125,9 +125,9 @@
   transform: rotate(180deg);
   background: linear-gradient(
     180deg,
-    rgba(255, 251, 229, 0) 0%,
-    rgba(21, 227, 227, 0.06) 35.5%,
-    rgba(255, 248, 0, 0.18) 80.5%
+    rgba(240, 253, 250, 0) 0%,
+    rgba(20, 184, 166, 0.06) 35.5%,
+    rgba(45, 212, 191, 0.14) 80.5%
   );
   filter: blur(100px);
 }
@@ -140,13 +140,13 @@
   height: 559px;
   left: 50%;
   margin-left: -197px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(168, 240, 248, 0.6) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(94, 234, 212, 0.5) 100%);
   filter: blur(100px);
 }
 
 .footer-border {
   position: relative;
-  background: linear-gradient(90deg, rgba(65, 75, 78, 0) 0%, #414b4e 49.5%, rgba(65, 75, 78, 0) 100%);
+  background: linear-gradient(90deg, transparent 0%, hsl(240 4% 22%) 49.5%, transparent 100%);
 }
 .footer-border::after {
   content: '';
@@ -157,8 +157,8 @@
   height: 1px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0) 15%,
-    rgba(255, 248, 0, 0.6) 50%,
-    rgba(255, 255, 255, 0) 85%
+    transparent 15%,
+    rgba(45, 212, 191, 0.5) 50%,
+    transparent 85%
   );
 }

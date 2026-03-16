@@ -1,5 +1,5 @@
 import { Tier } from '@/constants/pricing-tier';
-import { CircleCheck } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 interface Props {
   tier: Tier;
@@ -7,11 +7,11 @@ interface Props {
 
 export function FeaturesList({ tier }: Props) {
   return (
-    <ul className={'p-8 flex flex-col gap-4'}>
+    <ul className="p-8 flex flex-col gap-3">
       {tier.features.map((feature: string) => (
-        <li key={feature} className="flex gap-x-3">
-          <CircleCheck className={'h-6 w-6 text-muted-foreground'} />
-          <span className={'text-base'}>{feature}</span>
+        <li key={feature} className="flex gap-x-3 items-center">
+          <Check className="h-4 w-4 text-primary flex-shrink-0" />
+          <span className="text-sm text-muted-foreground">{feature}</span>
         </li>
       ))}
     </ul>

@@ -4,26 +4,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 const cards = [
   {
     title: 'Storage used',
-    icon: <Bolt className={'text-[#4B4F4F]'} size={18} />,
+    icon: <Bolt className={'text-muted-foreground'} size={18} />,
     value: '1.2 GB',
     change: '10 GB remaining',
   },
   {
     title: 'Active workspaces',
-    icon: <Shapes className={'text-[#4B4F4F]'} size={18} />,
+    icon: <Shapes className={'text-muted-foreground'} size={18} />,
     value: '4',
     change: '6 available workspaces',
   },
   {
     title: 'Assets exported',
     // eslint-disable-next-line jsx-a11y/alt-text
-    icon: <Image className={'text-[#4B4F4F]'} size={18} />,
+    icon: <Image className={'text-muted-foreground'} size={18} />,
     value: '286',
     change: '+16% from last month',
   },
   {
     title: 'Collaborators',
-    icon: <Timer className={'text-[#4B4F4F]'} size={18} />,
+    icon: <Timer className={'text-muted-foreground'} size={18} />,
     value: '10',
     change: '+27% from last month',
   },
