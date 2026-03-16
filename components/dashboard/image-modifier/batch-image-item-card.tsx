@@ -61,7 +61,7 @@ function CompareTabs({ active, onChange }: { active: CompareTab; onChange: (tab:
           type="button"
           onClick={() => onChange(tab)}
           className={cn(
-            'rounded-md px-3 py-1 text-xs font-medium capitalize transition-colors',
+            'rounded-md px-3 py-2 text-xs font-medium capitalize transition-colors sm:py-1',
             active === tab ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted',
           )}
         >
@@ -170,7 +170,7 @@ export function BatchImageItemCard({
             type="button"
             size="sm"
             variant={isDone ? 'secondary' : 'default'}
-            className="h-8 flex-1 gap-1.5 text-xs"
+            className="h-10 flex-1 gap-1.5 text-xs sm:h-8"
             onClick={onGenerate}
             disabled={disableActions || isGenerating}
           >
@@ -191,7 +191,7 @@ export function BatchImageItemCard({
             type="button"
             size="icon"
             variant="ghost"
-            className="h-8 w-8 shrink-0"
+            className="h-10 w-10 shrink-0 sm:h-8 sm:w-8"
             onClick={onDownload}
             disabled={!item.resultImage || isGenerating}
             aria-label="Download"
@@ -203,7 +203,7 @@ export function BatchImageItemCard({
             type="button"
             size="icon"
             variant="ghost"
-            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+            className="h-10 w-10 shrink-0 text-muted-foreground hover:text-destructive sm:h-8 sm:w-8"
             onClick={onRemove}
             disabled={isGenerating}
             aria-label="Remove"
