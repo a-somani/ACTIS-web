@@ -1,8 +1,8 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-
 import { createClient } from '@/utils/supabase/server';
+import { log } from '@/utils/logger';
 
 interface FormData {
   email: string;
@@ -20,13 +20,16 @@ export async function signup(data: FormData) {
   });
 
   if (error) {
+    log.warn('Signup failed', { action: 'signup', email: data.email, reason: error.message });
     return { error: error.message };
   }
 
   if (!signUpData.session) {
+    log.info('Signup requires email confirmation', { action: 'signup', email: data.email });
     return { requiresEmailConfirmation: true };
   }
 
+  log.info('Signup succeeded', { action: 'signup', email: data.email });
   revalidatePath('/', 'layout');
   return { success: true };
 }

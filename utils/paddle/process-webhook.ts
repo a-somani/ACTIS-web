@@ -11,6 +11,7 @@ import {
   SubscriptionUpdatedEvent,
 } from '@paddle/paddle-node-sdk';
 import { createClient } from '@/utils/supabase/server-internal';
+import { log } from '@/utils/logger';
 
 type SubscriptionEvent =
   | SubscriptionCreatedEvent
@@ -35,6 +36,8 @@ export class ProcessWebhook {
       case EventName.CustomerUpdated:
         await this.updateCustomerData(eventData);
         break;
+      default:
+        log.info('Unhandled webhook event', { event: eventData.eventType });
     }
   }
 
@@ -52,7 +55,19 @@ export class ProcessWebhook {
       })
       .select();
 
-    if (error) throw error;
+    if (error) {
+      log.error('Failed to upsert subscription', error, {
+        subscriptionId: eventData.data.id,
+        event: eventData.eventType,
+      });
+      throw error;
+    }
+
+    log.info('Subscription upserted', {
+      subscriptionId: eventData.data.id,
+      status: eventData.data.status,
+      event: eventData.eventType,
+    });
   }
 
   private async updateCustomerData(eventData: CustomerCreatedEvent | CustomerUpdatedEvent) {
@@ -65,6 +80,17 @@ export class ProcessWebhook {
       })
       .select();
 
-    if (error) throw error;
+    if (error) {
+      log.error('Failed to upsert customer', error, {
+        customerId: eventData.data.id,
+        event: eventData.eventType,
+      });
+      throw error;
+    }
+
+    log.info('Customer upserted', {
+      customerId: eventData.data.id,
+      event: eventData.eventType,
+    });
   }
 }

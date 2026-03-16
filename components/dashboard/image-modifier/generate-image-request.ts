@@ -52,8 +52,17 @@ export async function generateImageRequest({
 
   const contentType = response.headers.get('content-type') ?? '';
   if (!response.ok || !contentType.includes('text/event-stream')) {
-    const data = (await response.json()) as ImageModifierResponse;
-    throw new Error(data.error ?? 'Image generation failed.');
+    const text = await response.text();
+    let errorMessage = `Image generation failed (${response.status}).`;
+    try {
+      const data = JSON.parse(text) as ImageModifierResponse;
+      errorMessage = data.error ?? errorMessage;
+    } catch {
+      if (text.length > 0 && text.length < 200) {
+        errorMessage = text;
+      }
+    }
+    throw new Error(errorMessage);
   }
 
   const reader = response.body?.getReader();
@@ -64,6 +73,8 @@ export async function generateImageRequest({
   const decoder = new TextDecoder();
   let buffer = '';
   let resultImage: string | null = null;
+
+  let serverError: string | null = null;
 
   const handleSseEvent = (eventType: string, eventData: string) => {
     let parsedData: StreamEventPayload = {};
@@ -90,7 +101,8 @@ export async function generateImageRequest({
     }
 
     if (eventType === 'error') {
-      throw new Error(parsedData.message ?? 'Generation failed.');
+      serverError = parsedData.message ?? 'Generation failed.';
+      return;
     }
 
     if (eventType === 'done') {
@@ -98,29 +110,40 @@ export async function generateImageRequest({
     }
   };
 
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) {
-      break;
-    }
-
-    buffer += decoder.decode(value, { stream: true });
-    const messages = buffer.split('\n\n');
-    buffer = messages.pop() ?? '';
-
-    for (const message of messages) {
-      const lines = message.split('\n');
-      const eventLine = lines.find((line) => line.startsWith('event:'));
-      const dataLine = lines.find((line) => line.startsWith('data:'));
-
-      if (!eventLine || !dataLine) {
-        continue;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        break;
       }
 
-      const eventType = eventLine.slice(6).trim();
-      const eventData = dataLine.slice(5).trim();
-      handleSseEvent(eventType, eventData);
+      buffer += decoder.decode(value, { stream: true });
+      const messages = buffer.split('\n\n');
+      buffer = messages.pop() ?? '';
+
+      for (const message of messages) {
+        const lines = message.split('\n');
+        const eventLine = lines.find((line) => line.startsWith('event:'));
+        const dataLine = lines.find((line) => line.startsWith('data:'));
+
+        if (!eventLine || !dataLine) {
+          continue;
+        }
+
+        const eventType = eventLine.slice(6).trim();
+        const eventData = dataLine.slice(5).trim();
+        handleSseEvent(eventType, eventData);
+      }
     }
+  } catch (streamError) {
+    if (!resultImage) {
+      const msg = streamError instanceof Error ? streamError.message : 'Connection lost during generation.';
+      throw new Error(msg);
+    }
+  }
+
+  if (serverError) {
+    throw new Error(serverError);
   }
 
   if (!resultImage) {

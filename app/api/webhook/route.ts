@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { ProcessWebhook } from '@/utils/paddle/process-webhook';
 import { getPaddleInstance } from '@/utils/paddle/get-paddle-instance';
+import { log } from '@/utils/logger';
 
 const webhookProcessor = new ProcessWebhook();
 
@@ -11,6 +12,7 @@ export async function POST(request: NextRequest) {
 
   try {
     if (!signature || !rawRequestBody) {
+      log.warn('Webhook received without signature', { route: 'POST /api/webhook' });
       return Response.json({ error: 'Missing signature from header' }, { status: 400 });
     }
 
@@ -18,13 +20,15 @@ export async function POST(request: NextRequest) {
     const eventData = await paddle.webhooks.unmarshal(rawRequestBody, privateKey, signature);
     const eventName = eventData?.eventType ?? 'Unknown event';
 
+    log.info('Webhook received', { route: 'POST /api/webhook', event: eventName });
+
     if (eventData) {
       await webhookProcessor.processEvent(eventData);
     }
 
     return Response.json({ status: 200, eventName });
   } catch (e) {
-    console.log(e);
+    log.error('Webhook processing failed', e, { route: 'POST /api/webhook' });
     return Response.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

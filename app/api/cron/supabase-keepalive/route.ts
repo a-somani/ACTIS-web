@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { log } from '@/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -51,6 +52,7 @@ export async function GET(request: Request) {
     .limit(1);
 
   if (error) {
+    log.error('Supabase keepalive failed', error, { route: 'GET /api/cron/supabase-keepalive' });
     return Response.json(
       {
         ok: false,
@@ -60,6 +62,7 @@ export async function GET(request: Request) {
     );
   }
 
+  log.info('Supabase keepalive OK', { route: 'GET /api/cron/supabase-keepalive', userCount: count ?? 0 });
   return Response.json({
     ok: true,
     keepalive: {

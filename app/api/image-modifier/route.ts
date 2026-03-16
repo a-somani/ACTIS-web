@@ -2,6 +2,7 @@ import { GoogleGenAI, Modality } from '@google/genai';
 import { createClient } from '@/utils/supabase/server';
 import { NANO_BANANA_BACKEND_PROMPT, createNanoBananaExpandPrompt, resolveExpandRatio } from '@/utils/constants';
 import { parseGeminiResponse } from '@/utils/image-modifier-helpers';
+import { log } from '@/utils/logger';
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -52,6 +53,15 @@ export async function POST(request: Request) {
   const ai = new GoogleGenAI({ apiKey });
   const imageBytes = Buffer.from(await image.arrayBuffer()).toString('base64');
 
+  log.info('Image expand started', {
+    route: 'POST /api/image-modifier',
+    userId: data.user.id,
+    targetRatio,
+    sourceRatio,
+    fileSize: image.size,
+    mimeType: image.type,
+  });
+
   try {
     const geminiResponse = await ai.models.generateContent({
       model,
@@ -72,11 +82,14 @@ export async function POST(request: Request) {
     const parsed = parseGeminiResponse(geminiResponse);
 
     if (!parsed.imageBase64) {
+      log.warn('Gemini returned no image', { route: 'POST /api/image-modifier', userId: data.user.id });
       return Response.json({ error: 'Nano Banana did not return an image.' }, { status: 502 });
     }
 
+    log.info('Image expand completed', { route: 'POST /api/image-modifier', userId: data.user.id, targetRatio });
     return Response.json(parsed);
   } catch (error) {
+    log.error('Image expand failed', error, { route: 'POST /api/image-modifier', userId: data.user.id });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return Response.json({ error: `Nano Banana request failed: ${errorMessage}` }, { status: 502 });
   }
