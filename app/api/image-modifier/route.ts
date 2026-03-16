@@ -46,7 +46,7 @@ export async function POST(request: Request) {
   }
 
   if (image.size > 10 * 1024 * 1024) {
-    return Response.json({ error: 'Image must be 10MB or smaller.' }, { status: 400 });
+    return Response.json({ error: 'Image must be 10 MB or smaller.' }, { status: 400 });
   }
 
   const mergedPrompt = backendPrompt.trim().length > 0 ? `${backendPrompt}\n\nUser request: ${userPrompt}` : userPrompt;

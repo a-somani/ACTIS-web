@@ -3,6 +3,7 @@ import type {
   OriginalImageMeta,
   StreamEventPayload,
 } from '@/components/dashboard/image-modifier/types';
+import { compressForUpload } from '@/utils/compress-image';
 
 interface GenerateImageRequestParams {
   file: File;
@@ -34,8 +35,9 @@ export async function generateImageRequest({
   originalImageMeta,
   onProgress,
 }: GenerateImageRequestParams): Promise<GenerateImageRequestResult> {
+  const uploadFile = await compressForUpload(file);
   const payload = new FormData();
-  payload.append('image', file);
+  payload.append('image', uploadFile);
   payload.append('targetRatio', targetRatio);
 
   const shouldSendSourceMeta = Boolean(originalImageMeta && originalImageMeta.ratioLabel !== targetRatio);
