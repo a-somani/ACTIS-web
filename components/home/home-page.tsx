@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { createClient } from '@/utils/supabase/client';
-import { useUserInfo } from '@/hooks/useUserInfo';
+import { useAuth } from '@/contexts/auth-context';
 import '../../styles/home-page.css';
 import { LocalizationBanner } from '@/components/home/header/localization-banner';
 import Header from '@/components/home/header/header';
@@ -12,8 +11,7 @@ import { HomePageBackground } from '@/components/gradients/home-page-background'
 import { Footer } from '@/components/home/footer/footer';
 
 export function HomePage() {
-  const supabase = createClient();
-  const { user } = useUserInfo(supabase);
+  const { user } = useAuth();
   const [country, setCountry] = useState('US');
 
   return (

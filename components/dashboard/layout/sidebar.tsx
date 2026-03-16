@@ -1,14 +1,14 @@
 'use client';
 
-import { Album, CreditCard, Home } from 'lucide-react';
+import { Album, CreditCard, ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const sidebarItems = [
   {
-    title: 'Dashboard',
-    icon: <Home className="h-6 w-6" />,
+    title: 'Image Expand',
+    icon: <ImageIcon className="h-6 w-6" />,
     href: '/dashboard',
   },
   {

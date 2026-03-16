@@ -19,11 +19,11 @@ export async function login(data: FormData) {
   return { success: true };
 }
 
-export async function signInWithGithub() {
+export async function signInWithGoogle() {
   const supabase = await createClient();
   const redirectBaseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
   const { data } = await supabase.auth.signInWithOAuth({
-    provider: 'github',
+    provider: 'google',
     options: {
       redirectTo: `${redirectBaseUrl}/auth/callback`,
     },
@@ -32,7 +32,21 @@ export async function signInWithGithub() {
     return { url: data.url };
   }
 
-  return { error: 'Unable to start GitHub login.' };
+  return { error: 'Unable to start Google login.' };
+}
+
+export async function resetPassword(email: string) {
+  const supabase = await createClient();
+  const redirectBaseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${redirectBaseUrl}/auth/callback?next=/dashboard`,
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: true };
 }
 
 export async function loginAnonymously() {

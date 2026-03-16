@@ -11,7 +11,13 @@ interface FormData {
 
 export async function signup(data: FormData) {
   const supabase = await createClient();
-  const { data: signUpData, error } = await supabase.auth.signUp(data);
+  const redirectBaseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const { data: signUpData, error } = await supabase.auth.signUp({
+    ...data,
+    options: {
+      emailRedirectTo: `${redirectBaseUrl}/auth/callback`,
+    },
+  });
 
   if (error) {
     return { error: error.message };

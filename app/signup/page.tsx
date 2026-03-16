@@ -1,7 +1,8 @@
+import Link from 'next/link';
 import { LoginGradient } from '@/components/gradients/login-gradient';
 import '../../styles/login.css';
 import { LoginCardGradient } from '@/components/gradients/login-card-gradient';
-import { GhLoginButton } from '@/components/authentication/gh-login-button';
+import { GoogleLoginButton } from '@/components/authentication/google-login-button';
 import { SignupForm } from '@/components/authentication/sign-up-form';
 
 export default function SignupPage() {
@@ -17,7 +18,7 @@ export default function SignupPage() {
           <LoginCardGradient />
           <SignupForm />
         </div>
-        <GhLoginButton label={'Sign up with GitHub'} />
+        <GoogleLoginButton label={'Sign up with Google'} />
         <div
           className={
             'mx-auto w-[343px] md:w-[488px] bg-background/80 backdrop-blur-[6px] px-6 md:px-16 pt-0 py-8 gap-6 flex flex-col items-center justify-center rounded-b-lg'
@@ -25,9 +26,9 @@ export default function SignupPage() {
         >
           <div className={'text-center text-muted-foreground text-sm mt-4 font-medium'}>
             Already have an account?{' '}
-            <a href={'/login'} className={'text-white'}>
+            <Link href={'/login'} className={'text-white'}>
               Log in
-            </a>
+            </Link>
           </div>
         </div>
       </div>

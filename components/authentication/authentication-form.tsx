@@ -6,9 +6,10 @@ interface Props {
   password: string;
   onEmailChange: (email: string) => void;
   onPasswordChange: (password: string) => void;
+  isNewPassword?: boolean;
 }
 
-export function AuthenticationForm({ email, onEmailChange, onPasswordChange, password }: Props) {
+export function AuthenticationForm({ email, onEmailChange, onPasswordChange, password, isNewPassword }: Props) {
   return (
     <>
       <div className="grid w-full max-w-sm items-center gap-1.5 mt-2">
@@ -32,7 +33,7 @@ export function AuthenticationForm({ email, onEmailChange, onPasswordChange, pas
           className={'border-border rounded-xs'}
           type="password"
           id="password"
-          autoComplete="current-password"
+          autoComplete={isNewPassword ? 'new-password' : 'current-password'}
           value={password}
           onChange={(e) => onPasswordChange(e.target.value)}
         />

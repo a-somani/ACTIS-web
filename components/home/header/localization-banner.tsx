@@ -18,7 +18,13 @@ export function LocalizationBanner({ country, onCountryChange }: Props) {
     <div className={'hidden md:flex border-border/50 border-b-2 bg-background'}>
       <div className={'flex flex-1 justify-center items-center p-2 gap-8'}>
         <div className={'flex items-center gap-4'}>
-          <Image src={'/assets/icons/localization-icon.svg'} alt={'Localization Icon'} width={36} height={36} />
+          <Image
+            src={'/assets/icons/localization-icon.svg'}
+            alt={'Localization Icon'}
+            width={36}
+            height={36}
+            style={{ width: 'auto', height: 'auto' }}
+          />
           <p className={'text-[16px] font-medium text-center'}>Preview localized prices</p>
           <Link
             className={'text-[16px] text-muted-foreground'}

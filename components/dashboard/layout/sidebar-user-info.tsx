@@ -2,22 +2,10 @@
 
 import { Separator } from '@/components/ui/separator';
 import { LogOut } from 'lucide-react';
-import { createClient } from '@/utils/supabase/client';
-import { MouseEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import { useUserInfo } from '@/hooks/useUserInfo';
+import { useAuth } from '@/contexts/auth-context';
 
 export function SidebarUserInfo() {
-  const supabase = createClient();
-  const router = useRouter();
-  const { user } = useUserInfo(supabase);
-
-  async function handleLogout(e: MouseEvent) {
-    e.preventDefault();
-    await supabase.auth.signOut();
-    router.push('/login');
-    router.refresh();
-  }
+  const { user, signOut } = useAuth();
 
   return (
     <div className={'flex flex-col items-start pb-8 px-2 text-sm font-medium lg:px-4'}>
@@ -32,7 +20,7 @@ export function SidebarUserInfo() {
           </div>
         </div>
         <div>
-          <LogOut onClick={handleLogout} className={'h-6 w-6 text-muted-foreground cursor-pointer'} />
+          <LogOut onClick={() => signOut()} className={'h-6 w-6 text-muted-foreground cursor-pointer'} />
         </div>
       </div>
     </div>

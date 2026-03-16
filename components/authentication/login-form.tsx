@@ -2,24 +2,26 @@
 
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { login, loginAnonymously } from '@/app/login/actions';
+import { login, loginAnonymously, resetPassword } from '@/app/login/actions';
 import { useState } from 'react';
 import { AuthenticationForm } from '@/components/authentication/authentication-form';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 
 export function LoginForm() {
-  const { toast } = useToast();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isGuestLoginEnabled = process.env.NODE_ENV !== 'production';
 
   async function handleLogin() {
+    setError(null);
+
     if (!email || !password) {
-      toast({ description: 'Please enter your email and password.', variant: 'destructive' });
+      setError('Please enter your email and password.');
       return;
     }
 
@@ -28,12 +30,12 @@ export function LoginForm() {
       const data = await login({ email, password });
 
       if (data?.error) {
-        toast({ description: data.error, variant: 'destructive' });
+        setError(data.error);
         return;
       }
 
       if (data?.success) {
-        router.push('/');
+        router.push('/dashboard');
         router.refresh();
       }
     } finally {
@@ -41,18 +43,41 @@ export function LoginForm() {
     }
   }
 
+  async function handleForgotPassword() {
+    setError(null);
+    setMessage(null);
+
+    if (!email) {
+      setError('Enter your email address first, then click Forgot password.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const data = await resetPassword(email);
+      if (data?.error) {
+        setError(data.error);
+        return;
+      }
+      setMessage('Password reset link sent. Check your email.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   async function handleAnonymousLogin() {
+    setError(null);
     setIsSubmitting(true);
     try {
       const data = await loginAnonymously();
 
       if (data?.error) {
-        toast({ description: data.error, variant: 'destructive' });
+        setError(data.error);
         return;
       }
 
       if (data?.success) {
-        router.push('/');
+        router.push('/dashboard');
         router.refresh();
       }
     } finally {
@@ -90,6 +115,16 @@ export function LoginForm() {
         password={password}
         onPasswordChange={(password) => setPassword(password)}
       />
+      <button
+        type="button"
+        onClick={handleForgotPassword}
+        className="w-full text-right text-sm text-muted-foreground hover:text-white transition-colors"
+        disabled={isSubmitting}
+      >
+        Forgot password?
+      </button>
+      {error ? <p className={'w-full text-sm text-destructive'}>{error}</p> : null}
+      {message ? <p className={'w-full text-sm text-green-500'}>{message}</p> : null}
       <Button
         formAction={() => handleLogin()}
         type={'submit'}
