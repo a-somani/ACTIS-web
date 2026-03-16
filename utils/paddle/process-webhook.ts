@@ -3,16 +3,32 @@ import {
   CustomerUpdatedEvent,
   EventEntity,
   EventName,
+  SubscriptionActivatedEvent,
+  SubscriptionCanceledEvent,
   SubscriptionCreatedEvent,
+  SubscriptionPausedEvent,
+  SubscriptionResumedEvent,
   SubscriptionUpdatedEvent,
 } from '@paddle/paddle-node-sdk';
 import { createClient } from '@/utils/supabase/server-internal';
+
+type SubscriptionEvent =
+  | SubscriptionCreatedEvent
+  | SubscriptionUpdatedEvent
+  | SubscriptionCanceledEvent
+  | SubscriptionPausedEvent
+  | SubscriptionResumedEvent
+  | SubscriptionActivatedEvent;
 
 export class ProcessWebhook {
   async processEvent(eventData: EventEntity) {
     switch (eventData.eventType) {
       case EventName.SubscriptionCreated:
       case EventName.SubscriptionUpdated:
+      case EventName.SubscriptionCanceled:
+      case EventName.SubscriptionPaused:
+      case EventName.SubscriptionResumed:
+      case EventName.SubscriptionActivated:
         await this.updateSubscriptionData(eventData);
         break;
       case EventName.CustomerCreated:
@@ -22,8 +38,8 @@ export class ProcessWebhook {
     }
   }
 
-  private async updateSubscriptionData(eventData: SubscriptionCreatedEvent | SubscriptionUpdatedEvent) {
-    const supabase = await createClient();
+  private async updateSubscriptionData(eventData: SubscriptionEvent) {
+    const supabase = createClient();
     const { error } = await supabase
       .from('subscriptions')
       .upsert({
@@ -40,7 +56,7 @@ export class ProcessWebhook {
   }
 
   private async updateCustomerData(eventData: CustomerCreatedEvent | CustomerUpdatedEvent) {
-    const supabase = await createClient();
+    const supabase = createClient();
     const { error } = await supabase
       .from('customers')
       .upsert({

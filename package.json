@@ -14,7 +14,12 @@
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
     "lint-staged": "lint-staged",
-    "test": "pnpm lint && pnpm prettier:check"
+    "test": "pnpm lint && pnpm prettier:check && vitest run",
+    "test:unit": "vitest run",
+    "test:watch": "vitest",
+    "db:setup:local": "supabase start && supabase db reset --local",
+    "db:reset:local": "supabase db reset --local",
+    "db:reset:remote": "bash scripts/reset-db.sh"
   },
   "git": {
     "pre-commit": "lint-staged"
@@ -63,7 +68,8 @@
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.13",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.0"
   },
   "pnpm": {
     "overrides": {

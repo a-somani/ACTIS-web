@@ -11,16 +11,17 @@ interface RatioOption {
 interface RatioSelectProps {
   value: string;
   options: RatioOption[];
+  disabled?: boolean;
   onChange: (value: string) => void;
 }
 
-export function RatioSelect({ value, options, onChange }: RatioSelectProps) {
+export function RatioSelect({ value, options, disabled = false, onChange }: RatioSelectProps) {
   return (
     <div className="space-y-2">
       <label htmlFor="target-ratio" className="text-sm font-medium">
         Output ratio
       </label>
-      <Select value={value} onValueChange={onChange}>
+      <Select value={value} onValueChange={onChange} disabled={disabled}>
         <SelectTrigger id="target-ratio" className="w-full">
           <SelectValue placeholder="Select output ratio" />
         </SelectTrigger>

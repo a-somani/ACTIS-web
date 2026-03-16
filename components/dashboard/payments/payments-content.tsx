@@ -35,10 +35,12 @@ export function PaymentsContent({ subscriptionId }: Props) {
     })();
   }, [subscriptionId, after]);
 
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
   if (!transactionResponse || transactionResponse.error) {
     return <ErrorContent />;
-  } else if (loading) {
-    return <LoadingScreen />;
   }
 
   const { data: transactionData, hasMore, totalRecords } = transactionResponse;

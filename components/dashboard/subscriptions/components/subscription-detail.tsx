@@ -8,7 +8,7 @@ import { SubscriptionLineItems } from '@/components/dashboard/subscriptions/comp
 import { SubscriptionHeader } from '@/components/dashboard/subscriptions/components/subscription-header';
 import { Separator } from '@/components/ui/separator';
 import { ErrorContent } from '@/components/dashboard/layout/error-content';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { LoadingScreen } from '@/components/dashboard/layout/loading-screen';
 import { SubscriptionDetailResponse, TransactionResponse } from '@/lib/api.types';
 
@@ -20,9 +20,13 @@ export function SubscriptionDetail({ subscriptionId }: Props) {
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionDetailResponse>();
   const [transactions, setTransactions] = useState<TransactionResponse>();
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const refetch = useCallback(() => setRefreshKey((k) => k + 1), []);
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       const [subscriptionResponse, transactionsResponse] = await Promise.all([
         getSubscription(subscriptionId),
         getTransactions(subscriptionId, ''),
@@ -37,7 +41,7 @@ export function SubscriptionDetail({ subscriptionId }: Props) {
       }
       setLoading(false);
     })();
-  }, [subscriptionId]);
+  }, [subscriptionId, refreshKey]);
 
   if (loading) {
     return <LoadingScreen />;
@@ -45,7 +49,7 @@ export function SubscriptionDetail({ subscriptionId }: Props) {
     return (
       <>
         <div>
-          <SubscriptionHeader subscription={subscription.data} />
+          <SubscriptionHeader subscription={subscription.data} onCanceled={refetch} />
           <Separator className={'relative bg-border mb-8 dashboard-header-highlight'} />
         </div>
         <div className={'grid gap-6 grid-cols-1 xl:grid-cols-6'}>

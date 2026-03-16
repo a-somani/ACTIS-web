@@ -25,10 +25,12 @@ export async function createClient() {
 export async function validateUserSession() {
   const supabase = await createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     throw new Error('You are not allowed to perform this action.');
   }
+
+  return user;
 }

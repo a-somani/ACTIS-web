@@ -9,9 +9,10 @@ import { MobileSidebar } from '@/components/dashboard/layout/mobile-sidebar';
 
 interface Props {
   subscription: Subscription;
+  onCanceled?: () => void;
 }
 
-export function SubscriptionHeader({ subscription }: Props) {
+export function SubscriptionHeader({ subscription, onCanceled }: Props) {
   const subscriptionItem = subscription.items[0];
 
   const price = subscriptionItem.quantity * parseFloat(subscription?.recurringTransactionDetails?.totals.total ?? '0');
@@ -47,7 +48,7 @@ export function SubscriptionHeader({ subscription }: Props) {
       </div>
       <div>
         {!(subscription.scheduledChange || subscription.status === 'canceled') && (
-          <SubscriptionHeaderActionButton subscriptionId={subscription.id} />
+          <SubscriptionHeaderActionButton subscriptionId={subscription.id} onCanceled={onCanceled} />
         )}
       </div>
     </div>

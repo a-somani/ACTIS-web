@@ -17,7 +17,7 @@ export function usePagination() {
 
   return {
     after: nextCursor,
-    hasPrev: cursorHistory.length > 0 || !!nextCursor,
+    hasPrev: cursorHistory.length > 0,
     goToNextPage,
     goToPrevPage,
   };

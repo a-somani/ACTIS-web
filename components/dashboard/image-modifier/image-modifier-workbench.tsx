@@ -1,249 +1,198 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent, type SyntheticEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ActionButton } from '@/components/ui/action-button';
 import { DEFAULT_EXPAND_RATIO, IMAGE_EXPAND_RATIO_OPTIONS } from '@/utils/constants';
-import { OriginalImageDropzone } from '@/components/dashboard/image-modifier/original-image-dropzone';
-import { ProgressBar } from '@/components/dashboard/image-modifier/progress-bar';
-import { ratioToAspect, formatAspectRatio } from '@/components/dashboard/image-modifier/ratio-utils';
 import { RatioSelect } from '@/components/dashboard/image-modifier/ratio-select';
-import type { OriginalImageMeta } from '@/components/dashboard/image-modifier/types';
-import { useImageModifierGeneration } from '@/components/dashboard/image-modifier/use-image-modifier-generation';
+import { useImageModifierBatch } from '@/components/dashboard/image-modifier/use-image-modifier-batch';
+import { BatchImageItemCard } from '@/components/dashboard/image-modifier/batch-image-item-card';
+
+function downloadDataUrl(dataUrl: string, filename: string) {
+  const extension = dataUrl.startsWith('data:image/jpeg') ? 'jpg' : 'png';
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = `${filename}.${extension}`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
 export function ImageModifierWorkbench() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const previewLoadStartedAtRef = useRef<number | null>(null);
-  const ASPECT_EPSILON = 0.0001;
-  const MIN_PREVIEW_LOADING_MS = 500;
-
-  const [file, setFile] = useState<File | null>(null);
-  const [isDragActive, setIsDragActive] = useState(false);
-  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const hasInitializedRatioRef = useRef(false);
   const [targetRatio, setTargetRatio] = useState(DEFAULT_EXPAND_RATIO);
-  const [originalImageMeta, setOriginalImageMeta] = useState<OriginalImageMeta | null>(null);
+  const [isDragActive, setIsDragActive] = useState(false);
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const {
-    resultImage,
-    error,
-    displayProgress,
-    isLoading,
-    hasGeneratedForCurrentImage,
-    resetForNewInput,
-    generateImage,
-  } = useImageModifierGeneration();
+    items,
+    isGeneratingAll,
+    addFiles,
+    removeItem,
+    clearAll,
+    generateItem,
+    generateAll,
+    resetOutputsForRatioChange,
+  } = useImageModifierBatch();
 
-  const originalPreview = useMemo(() => {
-    return file ? URL.createObjectURL(file) : null;
-  }, [file]);
-
-  useEffect(() => {
-    return () => {
-      if (originalPreview) {
-        URL.revokeObjectURL(originalPreview);
-      }
-    };
-  }, [originalPreview]);
-
-  const sourceAspect = useMemo(() => {
-    return originalImageMeta ? originalImageMeta.width / originalImageMeta.height : null;
-  }, [originalImageMeta]);
-
-  const ratioOptionsWithDisabledState = useMemo(
-    () =>
-      IMAGE_EXPAND_RATIO_OPTIONS.map((option) => {
-        const optionAspect = ratioToAspect(option.value);
-        // Expand-only flow: target ratio must be strictly smaller than source ratio.
-        const disabled = sourceAspect !== null ? optionAspect >= sourceAspect - ASPECT_EPSILON : false;
-        return { ...option, disabled };
-      }),
-    [sourceAspect],
-  );
+  const ratioOptions = useMemo(() => IMAGE_EXPAND_RATIO_OPTIONS.map((option) => ({ ...option, disabled: false })), []);
 
   useEffect(() => {
-    if (sourceAspect === null) {
+    if (!hasInitializedRatioRef.current) {
+      hasInitializedRatioRef.current = true;
       return;
     }
 
-    const targetAspect = ratioToAspect(targetRatio);
-    if (targetAspect < sourceAspect - ASPECT_EPSILON) {
+    resetOutputsForRatioChange();
+    // resetOutputsForRatioChange is intentionally omitted because we only want this on ratio changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetRatio]);
+
+  const handleAddFiles = async (incomingFiles: File[]) => {
+    if (!incomingFiles.length) {
       return;
     }
 
-    const validOptions = IMAGE_EXPAND_RATIO_OPTIONS.filter(
-      (option) => ratioToAspect(option.value) < sourceAspect - ASPECT_EPSILON,
-    );
+    const validFiles = incomingFiles.filter((file) => file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024);
+    const rejectedFiles = incomingFiles.length - validFiles.length;
 
-    if (validOptions.length === 0) {
-      return;
+    if (rejectedFiles > 0) {
+      setValidationMessage(`${rejectedFiles} file(s) were skipped. Only images up to 10MB are supported.`);
+    } else {
+      setValidationMessage(null);
     }
 
-    const bestFallback = validOptions.reduce((best, current) => {
-      const bestAspect = ratioToAspect(best.value);
-      const currentAspect = ratioToAspect(current.value);
-      return currentAspect > bestAspect ? current : best;
-    }, validOptions[0]);
-
-    setTargetRatio(bestFallback.value);
-  }, [sourceAspect, targetRatio]);
-
-  const setSelectedFile = (nextFile: File | null) => {
-    resetForNewInput();
-    setOriginalImageMeta(null);
-    setFile(nextFile);
-    setIsPreviewLoading(Boolean(nextFile));
-    previewLoadStartedAtRef.current = nextFile ? Date.now() : null;
+    await addFiles(validFiles);
   };
 
-  const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextFile = event.target.files?.[0];
-    if (!nextFile) {
-      setIsPreviewLoading(false);
-      return;
+  const onFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    await handleAddFiles(files);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
-    setSelectedFile(nextFile);
   };
 
-  const onDrop = (event: DragEvent<HTMLDivElement>) => {
+  const onDrop = async (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragActive(false);
-    setSelectedFile(event.dataTransfer.files?.[0] ?? null);
-  };
-
-  const onDragOver = (event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-  };
-
-  const onDragEnter = (event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setIsDragActive(true);
-  };
-
-  const onDragLeave = (event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setIsDragActive(false);
+    await handleAddFiles(Array.from(event.dataTransfer.files ?? []));
   };
 
   const openFilePicker = () => {
-    // Allow selecting the same file again to trigger onChange.
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
     fileInputRef.current?.click();
   };
 
-  const removeSelectedImage = () => {
-    setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+  const handleDownloadAll = () => {
+    const completed = items.filter((item) => item.resultImage);
+    completed.forEach((item, index) => {
+      const resultImage = item.resultImage;
+      if (!resultImage) {
+        return;
+      }
+
+      window.setTimeout(() => {
+        downloadDataUrl(resultImage, `image-expand-${targetRatio.replace(':', 'x')}-${index + 1}`);
+      }, index * 200);
+    });
   };
 
-  const handlePreviewLoaded = (event?: SyntheticEvent<HTMLImageElement>) => {
-    const imageElement = event?.currentTarget;
-    if (imageElement?.naturalWidth && imageElement?.naturalHeight) {
-      setOriginalImageMeta({
-        width: imageElement.naturalWidth,
-        height: imageElement.naturalHeight,
-        ratioLabel: formatAspectRatio(imageElement.naturalWidth, imageElement.naturalHeight),
-      });
-    }
-
-    const startedAt = previewLoadStartedAtRef.current;
-    const elapsed = startedAt ? Date.now() - startedAt : MIN_PREVIEW_LOADING_MS;
-    const remaining = Math.max(0, MIN_PREVIEW_LOADING_MS - elapsed);
-    window.setTimeout(() => setIsPreviewLoading(false), remaining);
-  };
-
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (resultImage) {
-      const extension = resultImage.startsWith('data:image/jpeg') ? 'jpg' : 'png';
-      const link = document.createElement('a');
-      link.href = resultImage;
-      link.download = `image-expand-${targetRatio.replace(':', 'x')}.${extension}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      return;
-    }
-
-    if (!file) {
-      return;
-    }
-    await generateImage({ file, targetRatio, originalImageMeta });
-  };
+  const completedCount = items.filter((item) => item.status === 'done').length;
 
   return (
-    <div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Image Modifier</CardTitle>
-          <CardDescription>Upload an image, pick a target ratio, and generate in the same canvas.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 pb-4">
-            <p className="text-sm text-muted-foreground">{resultImage ? `Generated (${targetRatio})` : 'Original'}</p>
-            <OriginalImageDropzone
-              fileInputRef={fileInputRef}
-              originalPreview={originalPreview}
-              generatedPreview={resultImage}
-              targetRatio={targetRatio}
-              sourceAspect={sourceAspect}
-              isDragActive={isDragActive}
-              isPreviewLoading={isPreviewLoading}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-              onDragEnter={onDragEnter}
-              onDragLeave={onDragLeave}
-              onFileChange={onFileChange}
-              onOpenFilePicker={openFilePicker}
-              onRemoveSelectedImage={removeSelectedImage}
-              onPreviewLoad={handlePreviewLoaded}
-              onPreviewError={() => {
-                setOriginalImageMeta(null);
-                handlePreviewLoaded();
-              }}
-            />
-            {originalImageMeta && !resultImage ? (
-              <p className="text-center text-xs text-muted-foreground">
-                {originalImageMeta.width}x{originalImageMeta.height} ({originalImageMeta.ratioLabel})
-              </p>
-            ) : null}
-          </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Image Modifier</CardTitle>
+        <CardDescription>
+          Add one or many images, choose a target ratio once, then run generation per image or for the full batch.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={onFileChange} />
 
-          <form className="space-y-4" onSubmit={onSubmit}>
-            <RatioSelect value={targetRatio} options={ratioOptionsWithDisabledState} onChange={setTargetRatio} />
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <ActionButton type="submit" className="w-full sm:w-auto" disabled={isLoading || !file}>
-                {isLoading ? 'Saving...' : 'Save'}
-              </ActionButton>
-              {hasGeneratedForCurrentImage && !isLoading ? (
-                <ActionButton
-                  type="button"
-                  variant="secondaryFlipped"
-                  className="w-full sm:w-auto"
-                  onClick={openFilePicker}
-                >
-                  Try again
-                </ActionButton>
-              ) : null}
-              {file && !isLoading ? (
-                <ActionButton
-                  type="button"
-                  variant="secondaryFlipped"
-                  className="w-full sm:w-auto"
-                  onClick={removeSelectedImage}
-                >
-                  Reset
-                </ActionButton>
-              ) : null}
+        <div
+          onDrop={onDrop}
+          onDragOver={(event) => event.preventDefault()}
+          onDragEnter={(event) => {
+            event.preventDefault();
+            setIsDragActive(true);
+          }}
+          onDragLeave={(event) => {
+            event.preventDefault();
+            setIsDragActive(false);
+          }}
+          className={`rounded-md border border-dashed p-6 text-center ${isDragActive ? 'border-primary bg-primary/5' : 'border-border'}`}
+        >
+          <p className="text-sm text-muted-foreground">Drop image files here, or add from your device.</p>
+          <ActionButton type="button" variant="secondary" className="mt-3 h-8 px-3 text-xs" onClick={openFilePicker}>
+            Add images
+          </ActionButton>
+          <p className="mt-2 text-xs text-muted-foreground">Supports batch upload. Max 10MB per image.</p>
+        </div>
+
+        {validationMessage ? <p className="text-sm text-destructive">{validationMessage}</p> : null}
+
+        <RatioSelect value={targetRatio} options={ratioOptions} disabled={isGeneratingAll} onChange={setTargetRatio} />
+
+        <div className="flex flex-wrap items-center gap-2">
+          <ActionButton
+            type="button"
+            className="h-8 px-3 text-xs"
+            onClick={() => generateAll(targetRatio)}
+            disabled={isGeneratingAll || items.length === 0}
+          >
+            {isGeneratingAll ? 'Generating all...' : 'Generate all'}
+          </ActionButton>
+          <ActionButton
+            type="button"
+            variant="secondary"
+            className="h-8 px-3 text-xs"
+            onClick={handleDownloadAll}
+            disabled={completedCount === 0 || isGeneratingAll}
+          >
+            Download all ({completedCount})
+          </ActionButton>
+          <ActionButton
+            type="button"
+            variant="secondary"
+            className="h-8 px-3 text-xs"
+            onClick={clearAll}
+            disabled={items.length === 0 || isGeneratingAll}
+          >
+            Clear all
+          </ActionButton>
+        </div>
+
+        <div className="space-y-3">
+          {items.length === 0 ? (
+            <div className="rounded-md border border-border px-4 py-8 text-center text-sm text-muted-foreground">
+              Your upload queue is empty.
             </div>
-          </form>
-          <ProgressBar progress={displayProgress} />
-          {error ? <p className="mt-4 text-sm text-destructive">{error}</p> : null}
-        </CardContent>
-      </Card>
-    </div>
+          ) : (
+            items.map((item, index) => (
+              <BatchImageItemCard
+                key={item.id}
+                item={item}
+                targetRatio={targetRatio}
+                disableActions={isGeneratingAll}
+                onGenerate={() => generateItem(item.id, targetRatio)}
+                onRemove={() => removeItem(item.id)}
+                onDownload={() => {
+                  if (!item.resultImage) {
+                    return;
+                  }
+
+                  downloadDataUrl(item.resultImage, `image-expand-${targetRatio.replace(':', 'x')}-${index + 1}`);
+                }}
+              />
+            ))
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

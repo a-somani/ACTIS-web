@@ -14,10 +14,19 @@ export function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const isGuestLoginEnabled = process.env.NODE_ENV !== 'production';
 
-  function handleLogin() {
-    login({ email, password }).then((data) => {
+  async function handleLogin() {
+    if (!email || !password) {
+      toast({ description: 'Please enter your email and password.', variant: 'destructive' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const data = await login({ email, password });
+
       if (data?.error) {
         toast({ description: data.error, variant: 'destructive' });
         return;
@@ -27,11 +36,16 @@ export function LoginForm() {
         router.push('/');
         router.refresh();
       }
-    });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
-  function handleAnonymousLogin() {
-    loginAnonymously().then((data) => {
+  async function handleAnonymousLogin() {
+    setIsSubmitting(true);
+    try {
+      const data = await loginAnonymously();
+
       if (data?.error) {
         toast({ description: data.error, variant: 'destructive' });
         return;
@@ -41,7 +55,9 @@ export function LoginForm() {
         router.push('/');
         router.refresh();
       }
-    });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -52,8 +68,14 @@ export function LoginForm() {
       </div>
       {isGuestLoginEnabled ? (
         <>
-          <Button onClick={() => handleAnonymousLogin()} type={'button'} variant={'secondary'} className={'w-full mt-6'}>
-            Log in as Guest
+          <Button
+            onClick={() => handleAnonymousLogin()}
+            type={'button'}
+            variant={'secondary'}
+            className={'w-full mt-6'}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Logging in...' : 'Log in as Guest'}
           </Button>
           <div className={'flex w-full items-center justify-center'}>
             <Separator className={'w-5/12 bg-border'} />
@@ -68,8 +90,14 @@ export function LoginForm() {
         password={password}
         onPasswordChange={(password) => setPassword(password)}
       />
-      <Button formAction={() => handleLogin()} type={'submit'} variant={'secondary'} className={'w-full'}>
-        Log in
+      <Button
+        formAction={() => handleLogin()}
+        type={'submit'}
+        variant={'secondary'}
+        className={'w-full'}
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? 'Logging in...' : 'Log in'}
       </Button>
     </form>
   );
