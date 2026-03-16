@@ -15,6 +15,14 @@ interface BatchImageItemCardProps {
   onDownload: () => void;
 }
 
+type CompareTab = 'original' | 'result';
+
+function ratioToCss(ratio: string): string {
+  const [w, h] = ratio.split(':').map(Number);
+  if (!w || !h) return '1/1';
+  return `${w}/${h}`;
+}
+
 function StatusBadge({ item }: { item: BatchImageItem }) {
   if (item.status === 'generating') return null;
 
@@ -27,7 +35,7 @@ function StatusBadge({ item }: { item: BatchImageItem }) {
   const { label, className } = config[item.status];
 
   return (
-    <span className={cn('absolute left-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-medium', className)}>
+    <span className={cn('absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[10px] font-medium', className)}>
       {label}
     </span>
   );
@@ -35,11 +43,52 @@ function StatusBadge({ item }: { item: BatchImageItem }) {
 
 function ProgressBar({ progress }: { progress: number }) {
   return (
-    <div className="absolute inset-x-0 bottom-0 h-1 bg-muted/50">
+    <div className="absolute inset-x-0 bottom-0 z-10 h-1 bg-muted/50">
       <div
         className="h-full bg-primary transition-all duration-300 ease-out"
         style={{ width: `${Math.min(progress, 100)}%` }}
       />
+    </div>
+  );
+}
+
+function CompareTabs({ active, onChange }: { active: CompareTab; onChange: (tab: CompareTab) => void }) {
+  return (
+    <div className="flex gap-1 p-2 pb-0">
+      {(['original', 'result'] as const).map((tab) => (
+        <button
+          key={tab}
+          type="button"
+          onClick={() => onChange(tab)}
+          className={cn(
+            'rounded-md px-3 py-1 text-xs font-medium capitalize transition-colors',
+            active === tab ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted',
+          )}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function OriginalOverlay({
+  originalSrc,
+  resultSrc,
+  targetRatio,
+  alt,
+}: {
+  originalSrc: string;
+  resultSrc: string;
+  targetRatio: string;
+  alt: string;
+}) {
+  return (
+    <div className="relative w-full overflow-hidden bg-muted" style={{ aspectRatio: ratioToCss(targetRatio) }}>
+      <img src={resultSrc} alt="" className="absolute inset-0 h-full w-full object-cover opacity-25" />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <img src={originalSrc} alt={alt} className="max-h-full max-w-full object-contain drop-shadow-lg" />
+      </div>
     </div>
   );
 }
@@ -52,47 +101,56 @@ export function BatchImageItemCard({
   onRemove,
   onDownload,
 }: BatchImageItemCardProps) {
-  const [showOriginal, setShowOriginal] = useState(false);
+  const [activeTab, setActiveTab] = useState<CompareTab>('result');
   const isDone = item.status === 'done';
   const isGenerating = item.status === 'generating';
-  const displayImage = isDone && !showOriginal && item.resultImage ? item.resultImage : item.previewUrl;
 
   return (
     <article className="group overflow-hidden rounded-lg border border-border bg-background/50">
-      <div
-        className={cn('relative cursor-pointer', isDone && 'cursor-pointer')}
-        onClick={() => {
-          if (isDone) setShowOriginal((prev) => !prev);
-        }}
-      >
-        <div className="relative aspect-square w-full overflow-hidden bg-muted">
-          <img
-            src={displayImage}
-            alt={item.file.name}
-            className={cn('h-full w-full object-cover transition-opacity duration-200', isGenerating && 'opacity-60')}
-          />
+      {isDone && <CompareTabs active={activeTab} onChange={setActiveTab} />}
 
-          {isGenerating && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="flex flex-col items-center gap-1">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                {item.progress !== null && (
-                  <span className="text-xs font-medium text-white drop-shadow">{Math.round(item.progress)}%</span>
-                )}
-              </div>
+      <div className="relative">
+        {isDone && item.resultImage ? (
+          activeTab === 'original' ? (
+            <OriginalOverlay
+              originalSrc={item.previewUrl}
+              resultSrc={item.resultImage}
+              targetRatio={targetRatio}
+              alt={item.file.name}
+            />
+          ) : (
+            <div className="relative w-full overflow-hidden bg-muted" style={{ aspectRatio: ratioToCss(targetRatio) }}>
+              <img src={item.resultImage} alt={item.file.name} className="h-full w-full object-cover" />
             </div>
-          )}
-        </div>
+          )
+        ) : (
+          <div className="relative aspect-square w-full overflow-hidden bg-muted">
+            <img
+              src={item.previewUrl}
+              alt={item.file.name}
+              className={cn(
+                'h-full w-full object-cover transition-opacity duration-200',
+                isGenerating && 'opacity-60',
+              )}
+            />
 
-        <StatusBadge item={item} />
-
-        {isGenerating && item.progress !== null && <ProgressBar progress={item.progress} />}
-
-        {isDone && (
-          <span className="absolute bottom-2 left-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
-            {showOriginal ? 'Original' : 'Result'}
-          </span>
+            {isGenerating && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-1">
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  {item.progress !== null && (
+                    <span className="text-xs font-medium text-white drop-shadow">
+                      {Math.round(item.progress)}%
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         )}
+
+        {!isDone && <StatusBadge item={item} />}
+        {isGenerating && item.progress !== null && <ProgressBar progress={item.progress} />}
       </div>
 
       <div className="space-y-2 p-3">
