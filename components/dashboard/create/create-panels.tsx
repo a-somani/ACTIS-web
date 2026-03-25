@@ -30,6 +30,7 @@ export function ReadyState(props: {
   sourcePreviewUrl: string;
   targetRatio: string;
   canGenerate: boolean;
+  generateLabel?: string;
   onGenerate: () => void;
   onReplace: () => void;
   onChangeRatio: (ratio: string) => void;
@@ -72,7 +73,7 @@ export function ReadyState(props: {
             disabled={!props.canGenerate}
           >
             <Sparkles className="mr-2 h-4 w-4" />
-            Generate 10 credits
+            {props.generateLabel ?? 'Generate 10 credits'}
           </Button>
           <Button
             variant="outline"

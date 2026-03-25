@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
 import { log } from '@/utils/logger';
+import { resolveServerSiteUrl } from '@/utils/server-site-url';
 
 interface FormData {
   email: string;
@@ -24,7 +25,7 @@ export async function login(data: FormData) {
 
 export async function signInWithGoogle(nextPath = '/dashboard') {
   const supabase = await createClient();
-  const redirectBaseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const redirectBaseUrl = await resolveServerSiteUrl();
   const redirectUrl = new URL('/auth/callback', redirectBaseUrl);
   redirectUrl.searchParams.set('next', nextPath);
   const { data } = await supabase.auth.signInWithOAuth({
@@ -44,7 +45,7 @@ export async function signInWithGoogle(nextPath = '/dashboard') {
 
 export async function resetPassword(email: string) {
   const supabase = await createClient();
-  const redirectBaseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const redirectBaseUrl = await resolveServerSiteUrl();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${redirectBaseUrl}/auth/callback?next=/dashboard`,
   });

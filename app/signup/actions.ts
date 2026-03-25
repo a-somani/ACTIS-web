@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
 import { log } from '@/utils/logger';
+import { resolveServerSiteUrl } from '@/utils/server-site-url';
 
 interface FormData {
   email: string;
@@ -11,7 +12,7 @@ interface FormData {
 
 export async function signup(data: FormData, nextPath = '/dashboard') {
   const supabase = await createClient();
-  const redirectBaseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const redirectBaseUrl = await resolveServerSiteUrl();
   const redirectUrl = new URL('/auth/callback', redirectBaseUrl);
   redirectUrl.searchParams.set('next', nextPath);
   const { data: signUpData, error } = await supabase.auth.signUp({

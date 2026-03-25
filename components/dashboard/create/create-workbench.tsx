@@ -28,9 +28,17 @@ function downloadDataUrl(dataUrl: string, filename: string) {
 
 interface CreateWorkbenchProps {
   initialCredits?: CreditSummaryResponse | null;
+  isAuthenticated?: boolean;
+  onRequireAuth?: () => void;
+  showDashboardChrome?: boolean;
 }
 
-export function CreateWorkbench({ initialCredits = null }: CreateWorkbenchProps) {
+export function CreateWorkbench({
+  initialCredits = null,
+  isAuthenticated = true,
+  onRequireAuth,
+  showDashboardChrome = true,
+}: CreateWorkbenchProps) {
   const galleryInputRef = useRef<HTMLInputElement | null>(null);
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
@@ -54,7 +62,9 @@ export function CreateWorkbench({ initialCredits = null }: CreateWorkbenchProps)
     cancelGeneration,
     clearForNextCreate,
     restoreHistoryItem,
-  } = useCreateWorkbench(initialCredits);
+  } = useCreateWorkbench({ initialCredits, isAuthenticated, onRequireAuth });
+
+  const generateLabel = isAuthenticated ? `Generate ${credits?.generationCost ?? 10} credits` : 'Sign in to generate';
 
   const handleSelect = (files: FileList | null) => {
     const file = files?.[0] ?? null;
@@ -88,6 +98,10 @@ export function CreateWorkbench({ initialCredits = null }: CreateWorkbenchProps)
           generationCost={credits?.generationCost ?? 10}
           inventoryCount={history.length}
           tierName={credits?.activeTierName ?? null}
+          showMobileSidebar={showDashboardChrome}
+          actionLabel={isAuthenticated ? 'Get Credits' : 'Sign In'}
+          actionHref={isAuthenticated ? '/dashboard/subscriptions' : '/'}
+          onActionClick={!isAuthenticated ? onRequireAuth : undefined}
         />
 
         <div className="mx-auto max-w-4xl space-y-6 text-center">
@@ -178,6 +192,12 @@ export function CreateWorkbench({ initialCredits = null }: CreateWorkbenchProps)
                 </div>
               )}
 
+              {!isAuthenticated && !sourcePreviewUrl && (
+                <div className="rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-white/85">
+                  Upload an image and sign in when you are ready to generate.
+                </div>
+              )}
+
               {!sourcePreviewUrl && (
                 <EmptyUploadState
                   isLoadingCredits={isLoadingCredits}
@@ -194,6 +214,7 @@ export function CreateWorkbench({ initialCredits = null }: CreateWorkbenchProps)
                   onGenerate={() => void startGeneration()}
                   onReplace={() => galleryInputRef.current?.click()}
                   canGenerate={canGenerate}
+                  generateLabel={generateLabel}
                 />
               )}
 

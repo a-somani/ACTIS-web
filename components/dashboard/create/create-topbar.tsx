@@ -11,15 +11,30 @@ interface CreateTopbarProps {
   generationCost: number;
   inventoryCount: number;
   tierName: string | null;
+  showMobileSidebar?: boolean;
+  actionLabel?: string;
+  actionHref?: string;
+  onActionClick?: () => void;
 }
 
-export function CreateTopbar({ balance, generationCost, inventoryCount, tierName }: CreateTopbarProps) {
+export function CreateTopbar({
+  balance,
+  generationCost,
+  inventoryCount,
+  tierName,
+  showMobileSidebar = true,
+  actionLabel = 'Get Credits',
+  actionHref = '/dashboard/subscriptions',
+  onActionClick,
+}: CreateTopbarProps) {
   return (
     <div className="relative z-10 flex items-center justify-between gap-3">
       <div className="flex items-center gap-3">
-        <div className="md:hidden">
-          <MobileSidebar />
-        </div>
+        {showMobileSidebar ? (
+          <div className="md:hidden">
+            <MobileSidebar />
+          </div>
+        ) : null}
         <div>
           <p className="text-xs uppercase tracking-[0.32em] text-primary/80">ACTIS Create</p>
           <h1 className="text-lg font-semibold md:text-2xl">Create with ACTIS</h1>
@@ -35,9 +50,15 @@ export function CreateTopbar({ balance, generationCost, inventoryCount, tierName
           value={inventoryCount.toString()}
         />
         {tierName ? <StatusChip icon={<Sparkles className="h-3.5 w-3.5" />} label="Plan" value={tierName} /> : null}
-        <Button asChild size="sm" className="h-10 rounded-2xl px-4">
-          <Link href="/dashboard/subscriptions">Get Credits</Link>
-        </Button>
+        {onActionClick ? (
+          <Button size="sm" className="h-10 rounded-2xl px-4" onClick={onActionClick}>
+            {actionLabel}
+          </Button>
+        ) : (
+          <Button asChild size="sm" className="h-10 rounded-2xl px-4">
+            <Link href={actionHref}>{actionLabel}</Link>
+          </Button>
+        )}
       </div>
     </div>
   );

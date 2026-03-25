@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { generateImageRequest } from '@/components/dashboard/image-modifier/generate-image-request';
 import { CreateDefaultRatio, CreatePhaseFallbackMessages } from '@/components/dashboard/create/constants';
 import type { CreditSummaryResponse, CreateHistoryItem } from '@/components/dashboard/create/types';
@@ -37,12 +37,16 @@ function buildFallbackMessage(progress: number): string {
   return CreatePhaseFallbackMessages[index];
 }
 
-async function fetchCredits(): Promise<CreditSummaryResponse> {
+async function fetchCredits(): Promise<CreditSummaryResponse | null> {
   const response = await fetch(`/api/credits?ts=${Date.now()}`, {
     cache: 'no-store',
     credentials: 'include',
   });
   const payload = (await response.json()) as CreditSummaryResponse;
+
+  if (response.status === 401) {
+    return null;
+  }
 
   if (!response.ok) {
     throw new Error(payload.error ?? 'Unable to load credits.');
@@ -51,7 +55,18 @@ async function fetchCredits(): Promise<CreditSummaryResponse> {
   return payload;
 }
 
-export function useCreateWorkbench(initialCredits: CreditSummaryResponse | null = null) {
+interface UseCreateWorkbenchOptions {
+  initialCredits?: CreditSummaryResponse | null;
+  isAuthenticated?: boolean;
+  onRequireAuth?: () => void;
+}
+
+export function useCreateWorkbench({
+  initialCredits = null,
+  isAuthenticated = true,
+  onRequireAuth,
+}: UseCreateWorkbenchOptions = {}) {
+  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [state, setState] = useState<CreateWorkbenchState>({
@@ -120,14 +135,14 @@ export function useCreateWorkbench(initialCredits: CreditSummaryResponse | null 
       }, delay),
     );
     const cleanupTimer = window.setTimeout(() => {
-      router.replace('/dashboard/create', { scroll: false });
+      router.replace(pathname || '/dashboard/create', { scroll: false });
     }, 12000);
 
     return () => {
       syncTimers.forEach((timer) => window.clearTimeout(timer));
       window.clearTimeout(cleanupTimer);
     };
-  }, [isSyncingBilling, refreshCredits, router]);
+  }, [isSyncingBilling, pathname, refreshCredits, router]);
 
   useEffect(() => {
     return () => {
@@ -142,11 +157,15 @@ export function useCreateWorkbench(initialCredits: CreditSummaryResponse | null 
   }, []);
 
   const canGenerate = useMemo(() => {
+    if (!isAuthenticated) {
+      return Boolean(state.sourceFile && !state.isGenerating);
+    }
+
     const balance = state.credits?.balance ?? 0;
     const cost = state.credits?.generationCost ?? 0;
 
     return Boolean(state.sourceFile && !state.isGenerating && balance >= cost);
-  }, [state.credits?.balance, state.credits?.generationCost, state.isGenerating, state.sourceFile]);
+  }, [isAuthenticated, state.credits?.balance, state.credits?.generationCost, state.isGenerating, state.sourceFile]);
 
   const setSourceFile = (file: File | null) => {
     if (!file) {
@@ -205,6 +224,11 @@ export function useCreateWorkbench(initialCredits: CreditSummaryResponse | null 
 
   const startGeneration = async () => {
     if (!state.sourceFile || !state.sourcePreviewUrl) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      onRequireAuth?.();
       return;
     }
 

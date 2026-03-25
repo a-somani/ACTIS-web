@@ -2,22 +2,24 @@
 
 import { useState } from 'react';
 import { AuthDialog, type AuthDialogMode } from '@/components/authentication/auth-dialog';
+import { CreateWorkbench } from '@/components/dashboard/create/create-workbench';
+import type { CreditSummaryResponse } from '@/components/dashboard/create/types';
 import { useAuth } from '@/contexts/auth-context';
 import '../../styles/home-page.css';
 import Header from '@/components/home/header/header';
-import { HeroSection } from '@/components/home/hero-section/hero-section';
-import { FeaturesSection } from '@/components/home/features-section/features-section';
-import { HowItWorksSection } from '@/components/home/how-it-works-section/how-it-works-section';
 import { HomePageBackground } from '@/components/gradients/home-page-background';
-import { Pricing } from '@/components/home/pricing/pricing';
-import { Footer } from '@/components/home/footer/footer';
 
-export function HomePage() {
-  const { user } = useAuth();
-  const [country, setCountry] = useState('US');
+interface HomePageProps {
+  initialCredits?: CreditSummaryResponse | null;
+  initialIsAuthenticated?: boolean;
+}
+
+export function HomePage({ initialCredits = null, initialIsAuthenticated = false }: HomePageProps) {
+  const { user, loading } = useAuth();
   const [authDialogMode, setAuthDialogMode] = useState<AuthDialogMode>('signup');
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [authNextPath, setAuthNextPath] = useState('/dashboard');
+  const [authNextPath, setAuthNextPath] = useState('/');
+  const isAuthenticated = Boolean(user?.id) || (loading && initialIsAuthenticated);
 
   function openAuthDialog(mode: AuthDialogMode, nextPath: string) {
     setAuthDialogMode(mode);
@@ -28,17 +30,31 @@ export function HomePage() {
   return (
     <div className="relative min-h-screen">
       <HomePageBackground />
-      <Header user={user} onOpenLogin={() => openAuthDialog('login', '/dashboard')} onOpenSignup={() => openAuthDialog('signup', '/dashboard')} />
-      <main>
-        <HeroSection
-          isAuthenticated={Boolean(user?.id)}
-          onStartExpanding={() => openAuthDialog('signup', '/dashboard')}
+      <Header
+        user={user}
+        onOpenLogin={() => openAuthDialog('login', '/')}
+        onOpenSignup={() => openAuthDialog('signup', '/')}
+        showMarketingLinks={false}
+        isAuthenticatedOverride={initialIsAuthenticated}
+      />
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-3 pb-6 pt-4 md:px-6 md:pb-10 md:pt-6">
+        <div className="space-y-3 px-2 text-center md:px-0">
+          <p className="text-sm font-semibold uppercase tracking-[0.32em] text-primary/80">ACTIS Create</p>
+          <h1 className="text-4xl font-semibold tracking-tight text-foreground md:text-6xl">
+            Landing page becomes the tool.
+          </h1>
+          <p className="mx-auto max-w-2xl text-sm text-muted-foreground md:text-base">
+            Upload a source image, choose your framing, and generate in the same flow visitors land on.
+          </p>
+        </div>
+
+        <CreateWorkbench
+          initialCredits={initialCredits}
+          isAuthenticated={isAuthenticated}
+          onRequireAuth={() => openAuthDialog('signup', '/')}
+          showDashboardChrome={false}
         />
-        <FeaturesSection />
-        <HowItWorksSection />
-        <Pricing country={country} user={user} onRequireAuth={(nextPath) => openAuthDialog('signup', nextPath)} />
       </main>
-      <Footer user={user} onOpenLogin={() => openAuthDialog('login', '/dashboard')} onOpenSignup={() => openAuthDialog('signup', '/dashboard')} />
       <AuthDialog
         open={authDialogOpen}
         mode={authDialogMode}

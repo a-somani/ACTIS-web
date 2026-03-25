@@ -6,9 +6,19 @@ interface Props {
   user: User | null;
   onOpenLogin: () => void;
   onOpenSignup: () => void;
+  showMarketingLinks?: boolean;
+  isAuthenticatedOverride?: boolean;
 }
 
-export default function Header({ user, onOpenLogin, onOpenSignup }: Props) {
+export default function Header({
+  user,
+  onOpenLogin,
+  onOpenSignup,
+  showMarketingLinks = true,
+  isAuthenticatedOverride = false,
+}: Props) {
+  const isAuthenticated = Boolean(user?.id) || isAuthenticatedOverride;
+
   return (
     <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
       <div className="mx-auto max-w-7xl px-8 py-4 flex items-center justify-between">
@@ -16,17 +26,19 @@ export default function Header({ user, onOpenLogin, onOpenSignup }: Props) {
           <Link className="flex items-center" href="/">
             <span className="text-xl font-semibold tracking-tight text-foreground">ACTIS</span>
           </Link>
-          <div className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
-            <Link href="#how-it-works" className="transition-colors hover:text-foreground">
-              How it works
-            </Link>
-            <Link href="#pricing" className="transition-colors hover:text-foreground">
-              Pricing
-            </Link>
-          </div>
+          {showMarketingLinks ? (
+            <div className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
+              <Link href="#how-it-works" className="transition-colors hover:text-foreground">
+                How it works
+              </Link>
+              <Link href="#pricing" className="transition-colors hover:text-foreground">
+                Pricing
+              </Link>
+            </div>
+          ) : null}
         </div>
         <div className="flex items-center gap-3">
-          {user?.id ? (
+          {isAuthenticated ? (
             <Button variant="secondary" asChild>
               <Link href="/dashboard">Dashboard</Link>
             </Button>
