@@ -5,24 +5,6 @@ import { createClient } from '@/utils/supabase/server';
 import { log } from '@/utils/logger';
 import { resolveServerSiteUrl } from '@/utils/server-site-url';
 
-interface FormData {
-  email: string;
-  password: string;
-}
-export async function login(data: FormData) {
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(data);
-
-  if (error) {
-    log.warn('Login failed', { action: 'login', email: data.email, reason: error.message });
-    return { error: error.message };
-  }
-
-  log.info('Login succeeded', { action: 'login', email: data.email });
-  revalidatePath('/', 'layout');
-  return { success: true };
-}
-
 export async function signInWithGoogle(nextPath = '/dashboard') {
   const supabase = await createClient();
   const redirectBaseUrl = await resolveServerSiteUrl();
@@ -41,22 +23,6 @@ export async function signInWithGoogle(nextPath = '/dashboard') {
 
   log.warn('Google OAuth failed to start', { action: 'signInWithGoogle' });
   return { error: 'Unable to start Google login.' };
-}
-
-export async function resetPassword(email: string) {
-  const supabase = await createClient();
-  const redirectBaseUrl = await resolveServerSiteUrl();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${redirectBaseUrl}/auth/callback?next=/dashboard`,
-  });
-
-  if (error) {
-    log.warn('Password reset failed', { action: 'resetPassword', email, reason: error.message });
-    return { error: error.message };
-  }
-
-  log.info('Password reset email sent', { action: 'resetPassword', email });
-  return { success: true };
 }
 
 export async function loginAnonymously() {
