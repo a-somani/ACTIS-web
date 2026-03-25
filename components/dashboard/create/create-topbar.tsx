@@ -36,8 +36,8 @@ export function CreateTopbar({
           </div>
         ) : null}
         <div>
-          <p className="text-xs uppercase tracking-[0.32em] text-primary/80">ACTIS Create</p>
-          <h1 className="text-lg font-semibold md:text-2xl">Create with ACTIS</h1>
+          <p className="text-[10px] uppercase tracking-[0.32em] text-primary/80 md:text-xs">ACTIS Create</p>
+          <h1 className="text-base font-semibold md:text-2xl">Create with ACTIS</h1>
         </div>
       </div>
 
@@ -51,11 +51,11 @@ export function CreateTopbar({
         />
         {tierName ? <StatusChip icon={<Sparkles className="h-3.5 w-3.5" />} label="Plan" value={tierName} /> : null}
         {onActionClick ? (
-          <Button size="sm" className="h-10 rounded-2xl px-4" onClick={onActionClick}>
+          <Button size="sm" className="h-9 rounded-2xl px-3 text-xs md:h-10 md:px-4 md:text-sm" onClick={onActionClick}>
             {actionLabel}
           </Button>
         ) : (
-          <Button asChild size="sm" className="h-10 rounded-2xl px-4">
+          <Button asChild size="sm" className="h-9 rounded-2xl px-3 text-xs md:h-10 md:px-4 md:text-sm">
             <Link href={actionHref}>{actionLabel}</Link>
           </Button>
         )}

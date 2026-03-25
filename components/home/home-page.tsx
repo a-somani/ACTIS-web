@@ -37,14 +37,14 @@ export function HomePage({ initialCredits = null, initialIsAuthenticated = false
         showMarketingLinks={false}
         isAuthenticatedOverride={loading && initialIsAuthenticated}
       />
-      <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-3 pb-6 pt-4 md:px-6 md:pb-10 md:pt-6">
-        <div className="space-y-3 px-2 text-center md:px-0">
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-3 pb-4 pt-3 md:gap-6 md:px-6 md:pb-10 md:pt-6">
+        <div className="space-y-2 px-2 text-center md:space-y-3 md:px-0">
           <p className="text-sm font-semibold uppercase tracking-[0.32em] text-primary/80">ACTIS Create</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-foreground md:text-6xl">
-            Landing page becomes the tool.
+          <h1 className="text-[2.65rem] font-semibold leading-none tracking-tight text-foreground md:text-6xl">
+            Create in the landing flow.
           </h1>
-          <p className="mx-auto max-w-2xl text-sm text-muted-foreground md:text-base">
-            Upload a source image, choose your framing, and generate in the same flow visitors land on.
+          <p className="mx-auto max-w-xl text-sm text-muted-foreground md:max-w-2xl md:text-base">
+            Upload a source image, choose your framing, and generate without leaving the page.
           </p>
         </div>
 
@@ -53,6 +53,7 @@ export function HomePage({ initialCredits = null, initialIsAuthenticated = false
           isAuthenticated={isAuthenticated}
           onRequireAuth={() => openAuthDialog('signup', '/')}
           showDashboardChrome={false}
+          compactMode="landing"
         />
       </main>
       <AuthDialog

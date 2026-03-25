@@ -9,16 +9,16 @@ import { CreateRatioOptions } from '@/components/dashboard/create/constants';
 
 export function EmptyUploadState(props: { isLoadingCredits: boolean; onCamera: () => void; onGallery: () => void }) {
   return (
-    <div className="space-y-4">
-      <div className="rounded-[30px] border border-dashed border-white/15 bg-black/20 p-5 md:p-6">
+    <div className="space-y-3 md:space-y-4">
+      <div className="rounded-[28px] border border-dashed border-white/15 bg-black/20 p-4 md:rounded-[30px] md:p-6">
         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">Add image here</p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid gap-3 sm:mt-5 sm:grid-cols-2">
           <ActionTile icon={<Camera className="h-5 w-5" />} label="Camera" onClick={props.onCamera} />
           <ActionTile icon={<FolderPlus className="h-5 w-5" />} label="Gallery" onClick={props.onGallery} />
         </div>
-        <p className="mt-5 text-sm text-white/50">JPG or PNG, up to 10 MB.</p>
+        <p className="mt-4 text-sm text-white/50 md:mt-5">JPG or PNG, up to 10 MB.</p>
       </div>
-      <Button className="h-[52px] w-full rounded-2xl text-base" disabled={props.isLoadingCredits}>
+      <Button className="h-12 w-full rounded-2xl text-sm md:h-[52px] md:text-base" disabled={props.isLoadingCredits}>
         <ImagePlus className="mr-2 h-4 w-4" />
         Add an image to continue
       </Button>
@@ -196,12 +196,12 @@ function ActionTile({ icon, label, onClick }: { icon: ReactNode; label: string; 
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center justify-center gap-3 rounded-[24px] border border-white/10 bg-white/[0.03] px-4 py-6 text-left"
+      className="flex items-center justify-center gap-3 rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-5 text-left md:rounded-[24px] md:py-6"
     >
-      <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/80">
+      <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/80 md:h-12 md:w-12">
         {icon}
       </span>
-      <span className="text-lg font-semibold text-white">{label}</span>
+      <span className="text-base font-semibold text-white md:text-lg">{label}</span>
     </button>
   );
 }

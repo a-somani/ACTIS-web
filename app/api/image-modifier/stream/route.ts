@@ -1,6 +1,7 @@
 import { GoogleGenAI, Modality } from '@google/genai';
 import { CreateGenerationCreditCost } from '@/utils/credits';
-import { consumeGenerationCredits, syncCreditsForUser } from '@/utils/credits-server';
+import { syncCreditsForUser } from '@/utils/credits-server';
+import { persistCreateGeneration } from '@/utils/create-generations-server';
 import { createClient } from '@/utils/supabase/server';
 import { NANO_BANANA_BACKEND_PROMPT, createNanoBananaExpandPrompt, resolveExpandRatio } from '@/utils/constants';
 import {
@@ -69,7 +70,8 @@ export async function POST(request: Request) {
   }
 
   const mergedPrompt = backendPrompt.trim().length > 0 ? `${backendPrompt}\n\nUser request: ${userPrompt}` : userPrompt;
-  const imageBytes = Buffer.from(await image.arrayBuffer()).toString('base64');
+  const sourceBytes = Buffer.from(await image.arrayBuffer());
+  const imageBytes = sourceBytes.toString('base64');
   const ai = new GoogleGenAI({ apiKey });
   const encoder = new TextEncoder();
 
@@ -200,11 +202,22 @@ export async function POST(request: Request) {
             return;
           }
 
-          await consumeGenerationCredits(user);
+          const resultBytes = Buffer.from(latestImage.imageBase64, 'base64');
+          const generationId = await persistCreateGeneration({
+            userId: user.id,
+            sourceFileName: image.name || 'actis-source',
+            sourceMimeType: image.type,
+            sourceBytes,
+            targetRatio,
+            resultMimeType: latestImage.mimeType ?? 'image/png',
+            resultBytes,
+          });
+
           advancePhase(99);
           sendEvent('result', {
             imageBase64: latestImage.imageBase64,
             mimeType: latestImage.mimeType ?? 'image/png',
+            generationId,
           });
           sendEvent('done', { message: 'Completed.', progress: 100 });
           log.info('Image expand stream completed', {

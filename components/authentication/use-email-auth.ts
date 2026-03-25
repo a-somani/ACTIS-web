@@ -53,10 +53,7 @@ export function useEmailAuth({
   }, [mode]);
 
   const step: AuthStep = otpSent ? 'otp' : lookup ? 'options' : 'email';
-  const switchCopy =
-    mode === 'login'
-      ? { label: "Don't have an account?", action: 'Sign up' }
-      : { label: 'Already have an account?', action: 'Log in' };
+  const switchCopy = { label: '', action: '' };
 
   const copy = useMemo<AuthDialogCopy>(() => {
     if (step === 'otp') {
@@ -80,20 +77,12 @@ export function useEmailAuth({
       };
     }
 
-    if (mode === 'login') {
-      return {
-        title: 'Welcome back',
-        description: 'Enter your email and we will guide you to the right sign-in method.',
-        emailLabel: 'Continue',
-      };
-    }
-
     return {
-      title: 'Create your account',
-      description: 'Enter your email to create an account or continue with the right sign-in method.',
+      title: 'Continue to ACTIS',
+      description: 'Enter your email and we will guide you to the right next step.',
       emailLabel: 'Continue',
     };
-  }, [email, lookup?.status, mode, step]);
+  }, [email, lookup?.status, step]);
 
   async function completeAuth() {
     onAuthSuccess?.();
@@ -124,8 +113,8 @@ export function useEmailAuth({
       setOtpSent(true);
       setMessage(
         status === 'new_user'
-          ? 'We sent a sign-in code. Enter it below to create your ACTIS account.'
-          : 'We sent a sign-in code. Enter it below to continue.',
+          ? 'We sent a one-time code. Enter it below to continue into ACTIS.'
+          : 'We sent a one-time code. Enter it below to continue.',
       );
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Unable to send a code right now.');

@@ -16,7 +16,7 @@ export function MobileSidebar() {
       <SheetContent side="left" className="flex flex-col">
         <SheetTitle className="sr-only">Dashboard navigation</SheetTitle>
         <SheetDescription className="sr-only">
-          Navigate between create, subscriptions, payments, and account settings.
+          Navigate between create, history, subscriptions, payments, and account settings.
         </SheetDescription>
         <Sidebar />
         <SidebarUserInfo />

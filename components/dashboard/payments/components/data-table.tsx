@@ -77,7 +77,8 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                No payments yet. Payments will appear here once you subscribe to a plan.
+                No payments found yet. If you just checked out, give Paddle a moment to sync your customer and transaction
+                records.
               </TableCell>
             </TableRow>
           )}

@@ -153,12 +153,14 @@ export function AuthDialogPanel({
         </>
       ) : null}
 
-      <div className="text-center text-sm font-medium text-muted-foreground">
-        {switchCopy.label}{' '}
-        <button type="button" className="text-foreground transition-colors hover:text-primary" onClick={onToggleMode}>
-          {switchCopy.action}
-        </button>
-      </div>
+      {switchCopy.label && switchCopy.action ? (
+        <div className="text-center text-sm font-medium text-muted-foreground">
+          {switchCopy.label}{' '}
+          <button type="button" className="text-foreground transition-colors hover:text-primary" onClick={onToggleMode}>
+            {switchCopy.action}
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -35,8 +35,9 @@ export function SubscriptionsBillingSync() {
   }
 
   return (
-    <div className="mb-6 rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary-foreground">
-      Payment received. Updating your subscription and credits...
+    <div className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/12 px-4 py-3 text-sm text-emerald-50 shadow-[0_0_0_1px_rgba(16,185,129,0.08)]">
+      <div className="font-medium text-emerald-100">Payment received.</div>
+      <div className="mt-1 text-emerald-50/90">Updating your subscription details and credit balance now.</div>
     </div>
   );
 }
