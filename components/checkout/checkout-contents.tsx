@@ -6,7 +6,7 @@ import { resolveSiteUrl } from '@/utils/site-url';
 import { type Environments, initializePaddle, type Paddle } from '@paddle/paddle-js';
 import type { CheckoutEventsData } from '@paddle/paddle-js/types/checkout/events';
 import throttle from 'lodash.throttle';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 interface PathParams {
@@ -20,9 +20,13 @@ interface Props {
 
 export function CheckoutContents({ userEmail }: Props) {
   const { priceId } = useParams<PathParams>();
+  const searchParams = useSearchParams();
   const [quantity, setQuantity] = useState<number>(1);
   const [paddle, setPaddle] = useState<Paddle | null>(null);
   const [checkoutData, setCheckoutData] = useState<CheckoutEventsData | null>(null);
+  const transactionId = searchParams.get('_ptxn');
+  const hasCheckoutTarget = Boolean(transactionId || priceId);
+  const canAdjustQuantity = Boolean(priceId) && !transactionId;
 
   const handleCheckoutEvents = (event: CheckoutEventsData) => {
     setCheckoutData(event);
@@ -38,7 +42,12 @@ export function CheckoutContents({ userEmail }: Props) {
   const successUrl = useMemo(() => resolveSiteUrl('/checkout/success'), []);
 
   useEffect(() => {
-    if (!paddle?.Initialized && process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN && process.env.NEXT_PUBLIC_PADDLE_ENV) {
+    if (
+      hasCheckoutTarget &&
+      !paddle?.Initialized &&
+      process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN &&
+      process.env.NEXT_PUBLIC_PADDLE_ENV
+    ) {
       initializePaddle({
         token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
         environment: process.env.NEXT_PUBLIC_PADDLE_ENV as Environments,
@@ -60,22 +69,37 @@ export function CheckoutContents({ userEmail }: Props) {
           },
         },
       }).then(async (paddle) => {
-        if (paddle && priceId) {
+        if (paddle && (transactionId || priceId)) {
           setPaddle(paddle);
           paddle.Checkout.open({
             ...(userEmail && { customer: { email: userEmail } }),
-            items: [{ priceId: priceId, quantity: 1 }],
+            ...(transactionId ? { transactionId } : { items: [{ priceId, quantity: 1 }] }),
           });
         }
       });
     }
-  }, [paddle?.Initialized, priceId, successUrl, userEmail]);
+  }, [hasCheckoutTarget, paddle?.Initialized, priceId, successUrl, transactionId, userEmail]);
 
   useEffect(() => {
-    if (paddle && priceId && paddle.Initialized) {
+    if (paddle && priceId && canAdjustQuantity && paddle.Initialized) {
       updateItems(paddle, priceId, quantity);
     }
-  }, [paddle, priceId, quantity, updateItems]);
+  }, [canAdjustQuantity, paddle, priceId, quantity, updateItems]);
+
+  if (!hasCheckoutTarget) {
+    return (
+      <div
+        className={
+          'rounded-lg md:bg-background/80 md:backdrop-blur-[24px] md:p-10 md:pl-16 md:pt-16 md:min-h-[400px] flex flex-col justify-center relative'
+        }
+      >
+        <CheckoutFormGradients />
+        <div className={'max-w-lg text-sm text-white/75'}>
+          This checkout page is used for Paddle payment links. Open it from a checkout flow or transaction email to continue.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -86,7 +110,12 @@ export function CheckoutContents({ userEmail }: Props) {
       <CheckoutFormGradients />
       <div className={'flex flex-col md:flex-row gap-8 md:gap-16'}>
         <div className={'w-full md:w-[400px]'}>
-          <PriceSection checkoutData={checkoutData} quantity={quantity} handleQuantityChange={setQuantity} />
+          <PriceSection
+            allowQuantityChange={canAdjustQuantity}
+            checkoutData={checkoutData}
+            quantity={quantity}
+            handleQuantityChange={setQuantity}
+          />
         </div>
         <div className={'min-w-[375px] lg:min-w-[535px]'}>
           <div className={'text-base leading-[20px] font-semibold mb-8'}>Payment details</div>

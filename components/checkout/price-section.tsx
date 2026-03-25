@@ -6,17 +6,19 @@ import { Separator } from '@/components/ui/separator';
 import { CheckoutEventsData } from '@paddle/paddle-js/types/checkout/events';
 
 interface Props {
+  allowQuantityChange?: boolean;
   checkoutData: CheckoutEventsData | null;
   quantity: number;
   handleQuantityChange: (quantity: number) => void;
 }
 
-export function PriceSection({ checkoutData, handleQuantityChange, quantity }: Props) {
+export function PriceSection({ allowQuantityChange = true, checkoutData, handleQuantityChange, quantity }: Props) {
   return (
     <>
       <div className={'hidden md:block'}>
         <CheckoutPriceContainer checkoutData={checkoutData} />
         <CheckoutLineItems
+          allowQuantityChange={allowQuantityChange}
           handleQuantityChange={handleQuantityChange}
           checkoutData={checkoutData}
           quantity={quantity}
@@ -30,6 +32,7 @@ export function PriceSection({ checkoutData, handleQuantityChange, quantity }: P
             <AccordionTrigger className={'text-muted-foreground no-underline!'}>Order summary</AccordionTrigger>
             <AccordionContent className={'pb-0'}>
               <CheckoutLineItems
+                allowQuantityChange={allowQuantityChange}
                 handleQuantityChange={handleQuantityChange}
                 checkoutData={checkoutData}
                 quantity={quantity}

@@ -13,6 +13,7 @@ import {
   WelcomeCreditGrant,
   type CreditTierId,
 } from '@/utils/credits';
+import { getPaddleInstance } from '@/utils/paddle/get-paddle-instance';
 
 type CreditTransactionKind = 'welcome_grant' | 'subscription_grant' | 'credit_pack_grant' | 'generation_debit';
 
@@ -154,6 +155,23 @@ async function linkCustomerToUserByEmail(userId: string, email: string | null | 
   }
 }
 
+async function upsertCustomerRecord(customerId: string, email: string | null | undefined) {
+  if (!email) {
+    return;
+  }
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('customers')
+    .upsert({ customer_id: customerId, email }, { onConflict: 'customer_id' })
+    .select('customer_id')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+}
+
 async function maybeGrantCredits(params: {
   userId: string;
   amount: number;
@@ -227,15 +245,18 @@ async function resolveUserIdForCustomer(customerId: string): Promise<string | nu
     throw customerError;
   }
 
-  if (!customer) {
-    return null;
-  }
-
-  if (customer.user_id) {
+  let customerEmail = customer?.email ?? null;
+  if (customer?.user_id) {
     return customer.user_id;
   }
 
-  if (!customer.email) {
+  if (!customerEmail) {
+    const paddleCustomer = await getPaddleInstance().customers.get(customerId);
+    customerEmail = paddleCustomer.email ?? null;
+    await upsertCustomerRecord(customerId, customerEmail);
+  }
+
+  if (!customerEmail) {
     return null;
   }
 
@@ -243,7 +264,7 @@ async function resolveUserIdForCustomer(customerId: string): Promise<string | nu
   const { data: users, error: usersError } = await authClient
     .from('users')
     .select('id,email')
-    .eq('email', customer.email)
+    .eq('email', customerEmail)
     .limit(1);
 
   if (usersError) {

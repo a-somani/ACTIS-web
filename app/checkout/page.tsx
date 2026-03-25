@@ -1,0 +1,22 @@
+import { CheckoutContents } from '@/components/checkout/checkout-contents';
+import { CheckoutHeader } from '@/components/checkout/checkout-header';
+import { CheckoutGradients } from '@/components/gradients/checkout-gradients';
+import { createClient } from '@/utils/supabase/server';
+import '../../styles/checkout.css';
+
+export default async function CheckoutLandingPage() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+
+  return (
+    <div className={'w-full min-h-screen relative overflow-hidden'}>
+      <CheckoutGradients />
+      <div
+        className={'mx-auto max-w-6xl relative px-[16px] md:px-[32px] py-[24px] flex flex-col gap-6 justify-between'}
+      >
+        <CheckoutHeader />
+        <CheckoutContents userEmail={data.user?.email} />
+      </div>
+    </div>
+  );
+}
