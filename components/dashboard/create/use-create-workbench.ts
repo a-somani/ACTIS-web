@@ -38,7 +38,10 @@ function buildFallbackMessage(progress: number): string {
 }
 
 async function fetchCredits(): Promise<CreditSummaryResponse> {
-  const response = await fetch('/api/credits', { cache: 'no-store' });
+  const response = await fetch(`/api/credits?ts=${Date.now()}`, {
+    cache: 'no-store',
+    credentials: 'include',
+  });
   const payload = (await response.json()) as CreditSummaryResponse;
 
   if (!response.ok) {
@@ -48,13 +51,13 @@ async function fetchCredits(): Promise<CreditSummaryResponse> {
   return payload;
 }
 
-export function useCreateWorkbench() {
+export function useCreateWorkbench(initialCredits: CreditSummaryResponse | null = null) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [state, setState] = useState<CreateWorkbenchState>({
-    credits: null,
+    credits: initialCredits,
     creditsError: null,
-    isLoadingCredits: true,
+    isLoadingCredits: initialCredits === null,
     sourceFile: null,
     sourcePreviewUrl: null,
     targetRatio: CreateDefaultRatio,
@@ -99,8 +102,12 @@ export function useCreateWorkbench() {
   }, []);
 
   useEffect(() => {
+    if (initialCredits) {
+      return;
+    }
+
     void refreshCredits();
-  }, [refreshCredits]);
+  }, [initialCredits, refreshCredits]);
 
   useEffect(() => {
     if (!isSyncingBilling) {

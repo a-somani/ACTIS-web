@@ -14,6 +14,7 @@ import {
 import { CreateStepItems } from '@/components/dashboard/create/constants';
 import { CreateTopbar } from '@/components/dashboard/create/create-topbar';
 import { useCreateWorkbench } from '@/components/dashboard/create/use-create-workbench';
+import type { CreditSummaryResponse } from '@/components/dashboard/create/types';
 
 function downloadDataUrl(dataUrl: string, filename: string) {
   const extension = dataUrl.startsWith('data:image/jpeg') ? 'jpg' : 'png';
@@ -25,7 +26,11 @@ function downloadDataUrl(dataUrl: string, filename: string) {
   document.body.removeChild(link);
 }
 
-export function CreateWorkbench() {
+interface CreateWorkbenchProps {
+  initialCredits?: CreditSummaryResponse | null;
+}
+
+export function CreateWorkbench({ initialCredits = null }: CreateWorkbenchProps) {
   const galleryInputRef = useRef<HTMLInputElement | null>(null);
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
@@ -49,7 +54,7 @@ export function CreateWorkbench() {
     cancelGeneration,
     clearForNextCreate,
     restoreHistoryItem,
-  } = useCreateWorkbench();
+  } = useCreateWorkbench(initialCredits);
 
   const handleSelect = (files: FileList | null) => {
     const file = files?.[0] ?? null;
