@@ -1,11 +1,16 @@
 'use client';
 
-import { Album, CreditCard, ImageIcon } from 'lucide-react';
+import { Album, CreditCard, ImageIcon, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const sidebarItems = [
+  {
+    title: 'Create',
+    icon: <Sparkles className="h-6 w-6" />,
+    href: '/dashboard/create',
+  },
   {
     title: 'Image Expand',
     icon: <ImageIcon className="h-6 w-6" />,

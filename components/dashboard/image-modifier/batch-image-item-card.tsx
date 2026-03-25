@@ -128,10 +128,7 @@ export function BatchImageItemCard({
             <img
               src={item.previewUrl}
               alt={item.file.name}
-              className={cn(
-                'h-full w-full object-cover transition-opacity duration-200',
-                isGenerating && 'opacity-60',
-              )}
+              className={cn('h-full w-full object-cover transition-opacity duration-200', isGenerating && 'opacity-60')}
             />
 
             {isGenerating && (
@@ -139,9 +136,7 @@ export function BatchImageItemCard({
                 <div className="flex flex-col items-center gap-1">
                   <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                   {item.progress !== null && (
-                    <span className="text-xs font-medium text-white drop-shadow">
-                      {Math.round(item.progress)}%
-                    </span>
+                    <span className="text-xs font-medium text-white drop-shadow">{Math.round(item.progress)}%</span>
                   )}
                 </div>
               </div>

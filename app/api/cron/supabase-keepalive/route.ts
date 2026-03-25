@@ -29,8 +29,7 @@ export async function GET(request: Request) {
   if (!supabaseUrl || !serviceRoleKey) {
     return Response.json(
       {
-        error:
-          'Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.',
+        error: 'Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.',
       },
       { status: 500 },
     );
@@ -46,10 +45,7 @@ export async function GET(request: Request) {
     },
   });
 
-  const { count, error } = await supabase
-    .from(CRON_PROBE_TABLE)
-    .select('id', { head: true, count: 'exact' })
-    .limit(1);
+  const { count, error } = await supabase.from(CRON_PROBE_TABLE).select('id', { head: true, count: 'exact' }).limit(1);
 
   if (error) {
     log.error('Supabase keepalive failed', error, { route: 'GET /api/cron/supabase-keepalive' });

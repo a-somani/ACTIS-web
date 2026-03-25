@@ -46,7 +46,14 @@ export function OriginalImageDropzone({
 
   return (
     <div className="mx-auto w-full max-w-sm">
-      <Input id="modifier-image" ref={fileInputRef} type="file" accept="image/*" onChange={onFileChange} className="hidden" />
+      <Input
+        id="modifier-image"
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={onFileChange}
+        className="hidden"
+      />
       <div
         onDrop={onDrop}
         onDragOver={onDragOver}
@@ -54,9 +61,7 @@ export function OriginalImageDropzone({
         onDragLeave={onDragLeave}
         className={`relative flex aspect-square w-full flex-col items-center justify-center overflow-visible text-center text-sm ${
           hasAnyPreview ? '' : 'rounded-md border border-dashed'
-        } ${
-          isDragActive ? 'border-primary bg-primary/5' : 'border-border'
-        }`}
+        } ${isDragActive ? 'border-primary bg-primary/5' : 'border-border'}`}
       >
         {generatedPreview ? (
           <img
@@ -110,7 +115,9 @@ export function OriginalImageDropzone({
               </Button>
             </div>
             {!generatedPreview && isPreviewLoading ? (
-              <div className="relative z-10 rounded-md bg-background/80 px-3 py-2 text-muted-foreground">Loading preview...</div>
+              <div className="relative z-10 rounded-md bg-background/80 px-3 py-2 text-muted-foreground">
+                Loading preview...
+              </div>
             ) : null}
           </>
         ) : (

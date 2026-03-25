@@ -95,7 +95,12 @@ export function ImageModifierWorkbench() {
 
       {hasItems && (
         <>
-          <RatioSelect value={targetRatio} options={ratioOptions} disabled={isGeneratingAll} onChange={setTargetRatio} />
+          <RatioSelect
+            value={targetRatio}
+            options={ratioOptions}
+            disabled={isGeneratingAll}
+            onChange={setTargetRatio}
+          />
 
           <Toolbar
             itemCount={items.length}

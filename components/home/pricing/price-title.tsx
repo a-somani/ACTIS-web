@@ -21,7 +21,12 @@ export function PriceTitle({ tier }: Props) {
       })}
     >
       <div className="flex items-center gap-3">
-        <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', featured ? 'bg-primary/15 text-primary' : 'bg-secondary text-muted-foreground')}>
+        <div
+          className={cn(
+            'w-10 h-10 rounded-lg flex items-center justify-center',
+            featured ? 'bg-primary/15 text-primary' : 'bg-secondary text-muted-foreground',
+          )}
+        >
           {tierIcons[id]}
         </div>
         <p className="text-xl font-semibold">{name}</p>

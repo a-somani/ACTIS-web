@@ -111,7 +111,9 @@ export function useImageModifierBatch(): UseImageModifierBatchResult {
       loadImageMeta(item.previewUrl).then((meta) => {
         if (!meta) return;
         setItems((previous) =>
-          previous.map((candidate) => (candidate.id === item.id ? { ...candidate, originalImageMeta: meta } : candidate)),
+          previous.map((candidate) =>
+            candidate.id === item.id ? { ...candidate, originalImageMeta: meta } : candidate,
+          ),
         );
       });
     }

@@ -32,10 +32,7 @@ export async function compressForUpload(file: File): Promise<File> {
   }
 
   const scale = 0.7;
-  const smallCanvas = new OffscreenCanvas(
-    Math.round(width * scale),
-    Math.round(height * scale),
-  );
+  const smallCanvas = new OffscreenCanvas(Math.round(width * scale), Math.round(height * scale));
   const smallCtx = smallCanvas.getContext('2d');
   if (!smallCtx) throw new Error('Canvas 2D context unavailable');
   smallCtx.drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height);

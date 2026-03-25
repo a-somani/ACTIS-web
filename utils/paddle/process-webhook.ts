@@ -8,8 +8,11 @@ import {
   SubscriptionCreatedEvent,
   SubscriptionPausedEvent,
   SubscriptionResumedEvent,
+  TransactionCompletedEvent,
+  TransactionPaidEvent,
   SubscriptionUpdatedEvent,
 } from '@paddle/paddle-node-sdk';
+import { grantCreditsForTransaction } from '@/utils/credits-server';
 import { createClient } from '@/utils/supabase/server-internal';
 import { log } from '@/utils/logger';
 
@@ -20,6 +23,8 @@ type SubscriptionEvent =
   | SubscriptionPausedEvent
   | SubscriptionResumedEvent
   | SubscriptionActivatedEvent;
+
+type TransactionEvent = TransactionCompletedEvent | TransactionPaidEvent;
 
 export class ProcessWebhook {
   async processEvent(eventData: EventEntity) {
@@ -35,6 +40,10 @@ export class ProcessWebhook {
       case EventName.CustomerCreated:
       case EventName.CustomerUpdated:
         await this.updateCustomerData(eventData);
+        break;
+      case EventName.TransactionCompleted:
+      case EventName.TransactionPaid:
+        await this.grantTransactionCredits(eventData);
         break;
       default:
         log.info('Unhandled webhook event', { event: eventData.eventType });
@@ -92,5 +101,28 @@ export class ProcessWebhook {
       customerId: eventData.data.id,
       event: eventData.eventType,
     });
+  }
+
+  private async grantTransactionCredits(eventData: TransactionEvent) {
+    try {
+      await grantCreditsForTransaction({
+        customerId: eventData.data.customerId,
+        transactionId: eventData.data.id,
+        priceIds: eventData.data.items
+          .map((item) => item.price?.id)
+          .filter((priceId): priceId is string => Boolean(priceId)),
+      });
+
+      log.info('Transaction credits processed', {
+        transactionId: eventData.data.id,
+        event: eventData.eventType,
+      });
+    } catch (error) {
+      log.error('Failed to process transaction credits', error, {
+        transactionId: eventData.data.id,
+        event: eventData.eventType,
+      });
+      throw error;
+    }
   }
 }

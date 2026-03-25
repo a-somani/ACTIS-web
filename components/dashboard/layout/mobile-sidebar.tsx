@@ -1,4 +1,4 @@
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 import { Sidebar } from '@/components/dashboard/layout/sidebar';
@@ -14,6 +14,10 @@ export function MobileSidebar() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="flex flex-col">
+        <SheetTitle className="sr-only">Dashboard navigation</SheetTitle>
+        <SheetDescription className="sr-only">
+          Navigate between create, subscriptions, payments, and account settings.
+        </SheetDescription>
         <Sidebar />
         <SidebarUserInfo />
       </SheetContent>

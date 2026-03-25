@@ -6,7 +6,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "kill -9 $(lsof -t -i:3010) || true && PORT=3010 next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

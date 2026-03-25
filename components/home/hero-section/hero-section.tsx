@@ -18,8 +18,8 @@ export function HeroSection() {
         </h1>
 
         <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Upload an image, pick a target ratio, and let AI intelligently extend it — maintaining context,
-          style, and quality. One image or hundreds.
+          Upload an image, pick a target ratio, and let AI intelligently extend it — maintaining context, style, and
+          quality. One image or hundreds.
         </p>
 
         <div className="flex items-center justify-center gap-4 mt-10">

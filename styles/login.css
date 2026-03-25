@@ -99,10 +99,5 @@
   height: 1px;
   left: 50%;
   position: absolute;
-  background: linear-gradient(
-    90deg,
-    transparent 15%,
-    rgba(45, 212, 191, 0.7) 50%,
-    transparent 85%
-  );
+  background: linear-gradient(90deg, transparent 15%, rgba(45, 212, 191, 0.7) 50%, transparent 85%);
 }

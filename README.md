@@ -12,16 +12,16 @@ AI-powered image editor with intelligent image expansion. Built with Next.js, Su
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | [Next.js](https://nextjs.org/) (App Router) |
-| Language | TypeScript |
-| Auth & DB | [Supabase](https://supabase.com/) |
-| Billing | [Paddle Billing](https://www.paddle.com/billing) |
-| AI | [Google Gemini](https://ai.google.dev/) (image generation) |
-| UI | [shadcn/ui](https://ui.shadcn.com/), [Tailwind CSS](https://tailwindcss.com/) |
-| Testing | [Vitest](https://vitest.dev/) (unit/integration) |
-| Deployment | [Vercel](https://vercel.com/) |
+| Layer      | Technology                                                                    |
+| ---------- | ----------------------------------------------------------------------------- |
+| Framework  | [Next.js](https://nextjs.org/) (App Router)                                   |
+| Language   | TypeScript                                                                    |
+| Auth & DB  | [Supabase](https://supabase.com/)                                             |
+| Billing    | [Paddle Billing](https://www.paddle.com/billing)                              |
+| AI         | [Google Gemini](https://ai.google.dev/) (image generation)                    |
+| UI         | [shadcn/ui](https://ui.shadcn.com/), [Tailwind CSS](https://tailwindcss.com/) |
+| Testing    | [Vitest](https://vitest.dev/) (unit/integration)                              |
+| Deployment | [Vercel](https://vercel.com/)                                                 |
 
 ## Getting Started
 
@@ -47,19 +47,22 @@ Copy `.env.local.example` to `.env.local` and fill in your values:
 cp .env.local.example .env.local
 ```
 
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side only) |
-| `NEXT_PUBLIC_SITE_URL` | Your app URL (`http://localhost:3000` locally, deployed URL in production) |
-| `PADDLE_API_KEY` | Paddle API key |
-| `PADDLE_NOTIFICATION_WEBHOOK_SECRET` | Paddle webhook secret |
-| `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN` | Paddle client-side token |
-| `NEXT_PUBLIC_PADDLE_ENV` | `sandbox` or `production` |
-| `NANO_BANANA_API_KEY` | Google AI API key for image generation |
-| `NANO_BANANA_MODEL` | Gemini model name (e.g. `gemini-3-pro-image-preview`) |
-| `CRON_SECRET` | Optional secret for the Supabase keepalive cron endpoint |
+| Variable                             | Description                                                                |
+| ------------------------------------ | -------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`           | Supabase project URL                                                       |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | Supabase anonymous key                                                     |
+| `SUPABASE_SERVICE_ROLE_KEY`          | Supabase service role key (server-side only)                               |
+| `NEXT_PUBLIC_SITE_URL`               | Your app URL (`http://localhost:3000` locally, deployed URL in production) |
+| `PADDLE_API_KEY`                     | Paddle API key                                                             |
+| `PADDLE_NOTIFICATION_WEBHOOK_SECRET` | Paddle webhook secret                                                      |
+| `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN`    | Paddle client-side token                                                   |
+| `NEXT_PUBLIC_PADDLE_ENV`             | `sandbox` or `production`                                                  |
+| `NEXT_PUBLIC_PADDLE_CREDIT_PACK_MINI_PRICE_ID` | Optional Paddle price ID for the Mini one-time credit pack     |
+| `NEXT_PUBLIC_PADDLE_CREDIT_PACK_CREATOR_PRICE_ID` | Optional Paddle price ID for the Creator one-time credit pack |
+| `NEXT_PUBLIC_PADDLE_CREDIT_PACK_STUDIO_PRICE_ID` | Optional Paddle price ID for the Studio one-time credit pack   |
+| `NANO_BANANA_API_KEY`                | Google AI API key for image generation                                     |
+| `NANO_BANANA_MODEL`                  | Gemini model name (e.g. `gemini-3-pro-image-preview`)                      |
+| `CRON_SECRET`                        | Optional secret for the Supabase keepalive cron endpoint                   |
 
 ### Run
 
@@ -115,15 +118,15 @@ utils/
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start dev server |
-| `pnpm build` | Production build |
-| `pnpm lint` | Run ESLint |
-| `pnpm prettier` | Format all files |
-| `pnpm test` | Lint + format check + run unit tests |
-| `pnpm test:unit` | Run Vitest unit tests only |
-| `pnpm test:watch` | Run Vitest in watch mode |
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `pnpm dev`        | Start dev server                     |
+| `pnpm build`      | Production build                     |
+| `pnpm lint`       | Run ESLint                           |
+| `pnpm prettier`   | Format all files                     |
+| `pnpm test`       | Lint + format check + run unit tests |
+| `pnpm test:unit`  | Run Vitest unit tests only           |
+| `pnpm test:watch` | Run Vitest in watch mode             |
 
 ## Testing
 
@@ -133,7 +136,8 @@ utils/
 ## Paddle Setup
 
 1. Create products and prices in your [Paddle dashboard](https://sandbox-vendors.paddle.com/)
-2. Update price IDs in `src/constants/pricing-tier.ts`
-3. Add your deploy URL to **Checkout > Website approval**
-4. Set your webhook endpoint to `https://your-domain.com/api/webhook` under **Developer tools > Notifications**
-5. Use [test card `4242 4242 4242 4242`](https://developer.paddle.com/concepts/payment-methods/credit-debit-card) in sandbox
+2. Update subscription price IDs in `constants/pricing-tier.ts`
+3. Set `NEXT_PUBLIC_PADDLE_CREDIT_PACK_MINI_PRICE_ID`, `NEXT_PUBLIC_PADDLE_CREDIT_PACK_CREATOR_PRICE_ID`, and `NEXT_PUBLIC_PADDLE_CREDIT_PACK_STUDIO_PRICE_ID` if you want one-time credit packs to appear
+4. Add your deploy URL to **Checkout > Website approval**
+5. Set your webhook endpoint to `https://your-domain.com/api/webhook` under **Developer tools > Notifications**
+6. Use [test card `4242 4242 4242 4242`](https://developer.paddle.com/concepts/payment-methods/credit-debit-card) in sandbox

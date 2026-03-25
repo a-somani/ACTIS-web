@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { ImageModifierResponse, OriginalImageMeta, StreamEventPayload } from '@/components/dashboard/image-modifier/types';
+import type {
+  ImageModifierResponse,
+  OriginalImageMeta,
+  StreamEventPayload,
+} from '@/components/dashboard/image-modifier/types';
 
 interface GenerateImageParams {
   file: File;

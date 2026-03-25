@@ -25,9 +25,7 @@ export function HowItWorksSection() {
   return (
     <section id="how-it-works" className="mx-auto max-w-6xl px-8 py-20 md:py-28">
       <div className="text-center mb-14">
-        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
-          Three steps. That&apos;s it.
-        </h2>
+        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Three steps. That&apos;s it.</h2>
         <p className="mt-4 text-muted-foreground text-lg max-w-xl mx-auto">
           No complex settings, no manual editing. Upload, expand, download.
         </p>

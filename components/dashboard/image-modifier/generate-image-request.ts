@@ -10,6 +10,8 @@ interface GenerateImageRequestParams {
   targetRatio: string;
   originalImageMeta: OriginalImageMeta | null;
   onProgress?: (progress: number) => void;
+  onStatusMessage?: (message: string) => void;
+  signal?: AbortSignal;
 }
 
 interface GenerateImageRequestResult {
@@ -34,6 +36,8 @@ export async function generateImageRequest({
   targetRatio,
   originalImageMeta,
   onProgress,
+  onStatusMessage,
+  signal,
 }: GenerateImageRequestParams): Promise<GenerateImageRequestResult> {
   const uploadFile = await compressForUpload(file);
   const payload = new FormData();
@@ -50,6 +54,7 @@ export async function generateImageRequest({
   const response = await fetch('/api/image-modifier/stream', {
     method: 'POST',
     body: payload,
+    signal,
   });
 
   const contentType = response.headers.get('content-type') ?? '';
@@ -90,6 +95,9 @@ export async function generateImageRequest({
     if (eventType === 'status') {
       if (typeof parsedData.progress === 'number') {
         onProgress?.(parsedData.progress);
+      }
+      if (typeof parsedData.message === 'string' && parsedData.message.length > 0) {
+        onStatusMessage?.(parsedData.message);
       }
       return;
     }

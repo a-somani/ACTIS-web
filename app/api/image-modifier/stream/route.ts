@@ -1,15 +1,34 @@
 import { GoogleGenAI, Modality } from '@google/genai';
+import { CreateGenerationCreditCost } from '@/utils/credits';
+import { consumeGenerationCredits, syncCreditsForUser } from '@/utils/credits-server';
 import { createClient } from '@/utils/supabase/server';
 import { NANO_BANANA_BACKEND_PROMPT, createNanoBananaExpandPrompt, resolveExpandRatio } from '@/utils/constants';
-import { createSseEvent, getChunkSignals, parseGeminiResponse, type ParsedResult } from '@/utils/image-modifier-helpers';
+import {
+  createSseEvent,
+  getChunkSignals,
+  parseGeminiResponse,
+  type ParsedResult,
+} from '@/utils/image-modifier-helpers';
 import { log } from '@/utils/logger';
 
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!data.user) {
+  if (!user) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const creditSummary = await syncCreditsForUser(user);
+  if (creditSummary.balance < CreateGenerationCreditCost) {
+    return Response.json(
+      {
+        error: `You need ${CreateGenerationCreditCost} credits to generate. Visit subscriptions to get more credits.`,
+      },
+      { status: 402 },
+    );
   }
 
   const apiKey = process.env.NANO_BANANA_API_KEY;
@@ -56,7 +75,7 @@ export async function POST(request: Request) {
 
   log.info('Image expand stream started', {
     route: 'POST /api/image-modifier/stream',
-    userId: data.user.id,
+    userId: user.id,
     targetRatio,
     sourceRatio,
     fileSize: image.size,
@@ -65,6 +84,12 @@ export async function POST(request: Request) {
 
   const stream = new ReadableStream({
     start(controller) {
+      let requestAborted = false;
+
+      request.signal.addEventListener('abort', () => {
+        requestAborted = true;
+      });
+
       const sendEvent = (event: string, payload: Record<string, unknown>) => {
         controller.enqueue(encoder.encode(createSseEvent(event, payload)));
       };
@@ -93,6 +118,11 @@ export async function POST(request: Request) {
         };
 
         try {
+          if (requestAborted) {
+            controller.close();
+            return;
+          }
+
           advancePhase(8, 'Uploading image...');
           advancePhase(20, 'Preparing Nano Banana request...');
 
@@ -128,6 +158,11 @@ export async function POST(request: Request) {
           advancePhase(30, 'Generating with Nano Banana...');
 
           for await (const chunk of responseStream) {
+            if (requestAborted) {
+              controller.close();
+              return;
+            }
+
             chunkIndex += 1;
             const signals = getChunkSignals(chunk);
             if (chunkIndex === 1 || signals.hasCandidate) {
@@ -152,7 +187,7 @@ export async function POST(request: Request) {
           if (!latestImage?.imageBase64) {
             log.warn('Gemini stream returned no image', {
               route: 'POST /api/image-modifier/stream',
-              userId: data.user.id,
+              userId: user.id,
               chunks: chunkIndex,
             });
             sendEvent('error', { message: 'Nano Banana did not return an image.' });
@@ -160,6 +195,12 @@ export async function POST(request: Request) {
             return;
           }
 
+          if (requestAborted) {
+            controller.close();
+            return;
+          }
+
+          await consumeGenerationCredits(user);
           advancePhase(99);
           sendEvent('result', {
             imageBase64: latestImage.imageBase64,
@@ -168,15 +209,20 @@ export async function POST(request: Request) {
           sendEvent('done', { message: 'Completed.', progress: 100 });
           log.info('Image expand stream completed', {
             route: 'POST /api/image-modifier/stream',
-            userId: data.user.id,
+            userId: user.id,
             targetRatio,
             chunks: chunkIndex,
           });
           controller.close();
         } catch (error) {
+          if (requestAborted) {
+            controller.close();
+            return;
+          }
+
           log.error('Image expand stream failed', error, {
             route: 'POST /api/image-modifier/stream',
-            userId: data.user.id,
+            userId: user.id,
           });
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           sendEvent('error', { message: `Nano Banana request failed: ${errorMessage}` });
