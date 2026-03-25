@@ -13,9 +13,11 @@ interface Props {
   loading: boolean;
   frequency: IBillingFrequency;
   priceMap: Record<string, string>;
+  isAuthenticated: boolean;
+  onRequireAuth: (nextPath: string) => void;
 }
 
-export function PriceCards({ loading, frequency, priceMap }: Props) {
+export function PriceCards({ loading, frequency, priceMap, isAuthenticated, onRequireAuth }: Props) {
   return (
     <div className="isolate mx-auto grid grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
       {PricingTier.map((tier) => (
@@ -36,9 +38,19 @@ export function PriceCards({ loading, frequency, priceMap }: Props) {
             <div className={'px-8 text-[16px] leading-[24px]'}>{tier.description}</div>
           </div>
           <div className={'px-8 mt-8'}>
-            <Button className={'w-full'} variant={'secondary'} asChild={true}>
-              <Link href={`/checkout/${tier.priceId[frequency.value]}`}>Get started</Link>
-            </Button>
+            {isAuthenticated ? (
+              <Button className={'w-full'} variant={'secondary'} asChild={true}>
+                <Link href={`/checkout/${tier.priceId[frequency.value]}`}>Get started</Link>
+              </Button>
+            ) : (
+              <Button
+                className={'w-full'}
+                variant={'secondary'}
+                onClick={() => onRequireAuth(`/checkout/${tier.priceId[frequency.value]}`)}
+              >
+                Get started
+              </Button>
+            )}
           </div>
           <FeaturesList tier={tier} />
         </div>

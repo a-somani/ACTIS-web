@@ -9,13 +9,15 @@ interface FormData {
   password: string;
 }
 
-export async function signup(data: FormData) {
+export async function signup(data: FormData, nextPath = '/dashboard') {
   const supabase = await createClient();
   const redirectBaseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const redirectUrl = new URL('/auth/callback', redirectBaseUrl);
+  redirectUrl.searchParams.set('next', nextPath);
   const { data: signUpData, error } = await supabase.auth.signUp({
     ...data,
     options: {
-      emailRedirectTo: `${redirectBaseUrl}/auth/callback`,
+      emailRedirectTo: redirectUrl.toString(),
     },
   });
 

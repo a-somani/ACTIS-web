@@ -1,3 +1,4 @@
+import { User } from '@supabase/supabase-js';
 import { Toggle } from '@/components/shared/toggle/toggle';
 import { PriceCards } from '@/components/home/pricing/price-cards';
 import { useEffect, useState } from 'react';
@@ -7,9 +8,11 @@ import { usePaddlePrices } from '@/hooks/usePaddlePrices';
 
 interface Props {
   country: string;
+  user: User | null;
+  onRequireAuth: (nextPath: string) => void;
 }
 
-export function Pricing({ country }: Props) {
+export function Pricing({ country, user, onRequireAuth }: Props) {
   const [frequency, setFrequency] = useState<IBillingFrequency>(BillingFrequency[0]);
   const [paddle, setPaddle] = useState<Paddle | undefined>(undefined);
 
@@ -39,7 +42,13 @@ export function Pricing({ country }: Props) {
       <div className="flex justify-center mb-10">
         <Toggle frequency={frequency} setFrequency={setFrequency} />
       </div>
-      <PriceCards frequency={frequency} loading={loading} priceMap={prices} />
+      <PriceCards
+        frequency={frequency}
+        loading={loading}
+        priceMap={prices}
+        isAuthenticated={Boolean(user?.id)}
+        onRequireAuth={onRequireAuth}
+      />
     </section>
   );
 }

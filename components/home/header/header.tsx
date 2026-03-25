@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 
 interface Props {
   user: User | null;
+  onOpenLogin: () => void;
+  onOpenSignup: () => void;
 }
 
-export default function Header({ user }: Props) {
+export default function Header({ user, onOpenLogin, onOpenSignup }: Props) {
   return (
     <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
       <div className="mx-auto max-w-7xl px-8 py-4 flex items-center justify-between">
@@ -30,12 +32,10 @@ export default function Header({ user }: Props) {
             </Button>
           ) : (
             <>
-              <Button variant="ghost" asChild className="hidden sm:inline-flex text-muted-foreground">
-                <Link href="/login">Sign in</Link>
+              <Button variant="ghost" className="hidden sm:inline-flex text-muted-foreground" onClick={onOpenLogin}>
+                Sign in
               </Button>
-              <Button asChild>
-                <Link href="/signup">Get started</Link>
-              </Button>
+              <Button onClick={onOpenSignup}>Get started</Button>
             </>
           )}
         </div>

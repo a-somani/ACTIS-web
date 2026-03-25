@@ -2,7 +2,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
-export function HeroSection() {
+interface Props {
+  isAuthenticated: boolean;
+  onStartExpanding: () => void;
+}
+
+export function HeroSection({ isAuthenticated, onStartExpanding }: Props) {
   return (
     <section className="mx-auto max-w-5xl px-8 relative mt-24 md:mt-32 mb-20 md:mb-28">
       <div className="text-center w-full">
@@ -23,12 +28,19 @@ export function HeroSection() {
         </p>
 
         <div className="flex items-center justify-center gap-4 mt-10">
-          <Button asChild className="h-12 px-6 text-base">
-            <Link href="/signup">
+          {isAuthenticated ? (
+            <Button asChild className="h-12 px-6 text-base">
+              <Link href="/dashboard">
+                Start expanding
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          ) : (
+            <Button className="h-12 px-6 text-base" onClick={onStartExpanding}>
               Start expanding
               <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+            </Button>
+          )}
           <Button variant="outline" asChild className="h-12 px-6 text-base border-border">
             <Link href="#how-it-works">See how it works</Link>
           </Button>

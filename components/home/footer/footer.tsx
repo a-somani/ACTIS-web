@@ -1,7 +1,14 @@
 import Link from 'next/link';
+import { User } from '@supabase/supabase-js';
 import { Separator } from '@/components/ui/separator';
 
-export function Footer() {
+interface Props {
+  user: User | null;
+  onOpenLogin: () => void;
+  onOpenSignup: () => void;
+}
+
+export function Footer({ user, onOpenLogin, onOpenSignup }: Props) {
   return (
     <footer className="mt-12">
       <Separator className="footer-border" />
@@ -11,15 +18,20 @@ export function Footer() {
           <span className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()}</span>
         </div>
         <div className="flex items-center gap-6 text-sm text-muted-foreground">
-          <Link href="/login" className="transition-colors hover:text-foreground">
-            Sign in
-          </Link>
-          <Link href="/signup" className="transition-colors hover:text-foreground">
-            Sign up
-          </Link>
-          <Link href="/dashboard" className="transition-colors hover:text-foreground">
-            Dashboard
-          </Link>
+          {user?.id ? (
+            <Link href="/dashboard" className="transition-colors hover:text-foreground">
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <button type="button" className="transition-colors hover:text-foreground" onClick={onOpenLogin}>
+                Sign in
+              </button>
+              <button type="button" className="transition-colors hover:text-foreground" onClick={onOpenSignup}>
+                Sign up
+              </button>
+            </>
+          )}
         </div>
       </div>
     </footer>

@@ -22,13 +22,15 @@ export async function login(data: FormData) {
   return { success: true };
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(nextPath = '/dashboard') {
   const supabase = await createClient();
   const redirectBaseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const redirectUrl = new URL('/auth/callback', redirectBaseUrl);
+  redirectUrl.searchParams.set('next', nextPath);
   const { data } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${redirectBaseUrl}/auth/callback`,
+      redirectTo: redirectUrl.toString(),
     },
   });
   if (data.url) {

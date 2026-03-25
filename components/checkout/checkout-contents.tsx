@@ -2,6 +2,7 @@
 
 import { PriceSection } from '@/components/checkout/price-section';
 import { CheckoutFormGradients } from '@/components/gradients/checkout-form-gradients';
+import { resolveSiteUrl } from '@/utils/site-url';
 import { type Environments, initializePaddle, type Paddle } from '@paddle/paddle-js';
 import type { CheckoutEventsData } from '@paddle/paddle-js/types/checkout/events';
 import throttle from 'lodash.throttle';
@@ -34,6 +35,7 @@ export function CheckoutContents({ userEmail }: Props) {
       }, 1000),
     [],
   );
+  const successUrl = useMemo(() => resolveSiteUrl('/checkout/success'), []);
 
   useEffect(() => {
     if (!paddle?.Initialized && process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN && process.env.NEXT_PUBLIC_PADDLE_ENV) {
@@ -54,7 +56,7 @@ export function CheckoutContents({ userEmail }: Props) {
             frameTarget: 'paddle-checkout-frame',
             frameInitialHeight: 450,
             frameStyle: 'width: 100%; background-color: transparent; border: none',
-            successUrl: '/checkout/success',
+            successUrl,
           },
         },
       }).then(async (paddle) => {
@@ -67,7 +69,7 @@ export function CheckoutContents({ userEmail }: Props) {
         }
       });
     }
-  }, [paddle?.Initialized, priceId, userEmail]);
+  }, [paddle?.Initialized, priceId, successUrl, userEmail]);
 
   useEffect(() => {
     if (paddle && priceId && paddle.Initialized) {
