@@ -29,6 +29,19 @@ interface CreditSummary {
 }
 
 const ActiveSubscriptionStatuses = ['active', 'trialing', 'past_due'];
+const DuplicateCreditReferenceConstraint = 'idx_credit_transactions_user_reference';
+
+function isDuplicateCreditReferenceError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const maybeError = error as { code?: string; message?: string };
+  return (
+    maybeError.code === '23505' &&
+    (maybeError.message?.includes(DuplicateCreditReferenceConstraint) ?? false)
+  );
+}
 
 function createCreditDescription(kind: CreditTransactionKind, tierName?: string | null): string {
   if (kind === 'welcome_grant') {
@@ -184,7 +197,15 @@ async function maybeGrantCredits(params: {
     return;
   }
 
-  await applyCreditDelta(params);
+  try {
+    await applyCreditDelta(params);
+  } catch (error) {
+    if (isDuplicateCreditReferenceError(error)) {
+      return;
+    }
+
+    throw error;
+  }
 }
 
 export async function syncCreditsForUser(user: Pick<User, 'id' | 'email'>): Promise<CreditSummary> {

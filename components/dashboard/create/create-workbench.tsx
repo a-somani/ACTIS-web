@@ -2,7 +2,6 @@
 
 import { useRef, useState } from 'react';
 import { ChevronDown, HelpCircle, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { CreateBackground } from '@/components/dashboard/create/create-background';
 import { CreateBestPracticesDialog } from '@/components/dashboard/create/create-best-practices-dialog';
 import {

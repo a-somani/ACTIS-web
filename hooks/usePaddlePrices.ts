@@ -21,20 +21,42 @@ export function usePaddlePrices(
   country: string,
 ): { prices: PaddlePrices; loading: boolean } {
   const [prices, setPrices] = useState<PaddlePrices>({});
-  const [loading, setLoading] = useState<boolean>(true);
+  const [resolvedRequestKey, setResolvedRequestKey] = useState<string | null>(null);
+  const requestKey = `${country}:${Boolean(paddle)}`;
+  const loading = Boolean(paddle) && resolvedRequestKey !== requestKey;
 
   useEffect(() => {
+    if (!paddle) {
+      return;
+    }
+
+    let isCancelled = false;
     const paddlePricePreviewRequest: Partial<PricePreviewParams> = {
       items: getLineItems(),
       ...(country !== 'OTHERS' && { address: { countryCode: country } }),
     };
 
-    setLoading(true);
+    paddle.PricePreview(paddlePricePreviewRequest as PricePreviewParams)
+      .then((prices) => {
+        if (isCancelled) {
+          return;
+        }
 
-    paddle?.PricePreview(paddlePricePreviewRequest as PricePreviewParams).then((prices) => {
-      setPrices((prevState) => ({ ...prevState, ...getPriceAmounts(prices) }));
-      setLoading(false);
-    });
-  }, [country, paddle]);
+        setPrices((prevState) => ({ ...prevState, ...getPriceAmounts(prices) }));
+        setResolvedRequestKey(requestKey);
+      })
+      .catch(() => {
+        if (isCancelled) {
+          return;
+        }
+
+        setResolvedRequestKey(requestKey);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [country, paddle, requestKey]);
+
   return { prices, loading };
 }

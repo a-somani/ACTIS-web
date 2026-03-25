@@ -96,7 +96,11 @@ export function useCreateWorkbench({
     const requestId = creditsRequestIdRef.current + 1;
     creditsRequestIdRef.current = requestId;
 
-    setState((current) => ({ ...current, isLoadingCredits: true, creditsError: null }));
+    setState((current) => ({
+      ...current,
+      isLoadingCredits: current.credits === null,
+      creditsError: null,
+    }));
 
     try {
       const credits = await fetchCredits();
@@ -129,14 +133,14 @@ export function useCreateWorkbench({
       return;
     }
 
-    const syncTimers = [1500, 3500, 6500, 10000].map((delay) =>
+    const syncTimers = [2000, 8000].map((delay) =>
       window.setTimeout(() => {
         void refreshCredits();
       }, delay),
     );
     const cleanupTimer = window.setTimeout(() => {
       router.replace(pathname || '/dashboard/create', { scroll: false });
-    }, 12000);
+    }, 10000);
 
     return () => {
       syncTimers.forEach((timer) => window.clearTimeout(timer));

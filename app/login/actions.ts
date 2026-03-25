@@ -5,20 +5,48 @@ import { createClient } from '@/utils/supabase/server';
 import { log } from '@/utils/logger';
 import { resolveServerSiteUrl } from '@/utils/server-site-url';
 
+function normalizeNextPath(nextPath: string): string {
+  if (nextPath.startsWith('/') && !nextPath.startsWith('//')) {
+    return nextPath;
+  }
+
+  return '/dashboard';
+}
+
 export async function signInWithGoogle(nextPath = '/dashboard') {
-  const supabase = await createClient();
-  const redirectBaseUrl = await resolveServerSiteUrl();
-  const redirectUrl = new URL('/auth/callback', redirectBaseUrl);
-  redirectUrl.searchParams.set('next', nextPath);
-  const { data } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: redirectUrl.toString(),
-    },
-  });
-  if (data.url) {
-    log.info('Google OAuth started', { action: 'signInWithGoogle' });
-    return { url: data.url };
+  try {
+    const safeNextPath = normalizeNextPath(nextPath);
+    const supabase = await createClient();
+    const redirectBaseUrl = await resolveServerSiteUrl();
+    const redirectUrl = new URL('/auth/callback', redirectBaseUrl);
+    redirectUrl.searchParams.set('next', safeNextPath);
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl.toString(),
+      },
+    });
+
+    if (error) {
+      log.warn('Google OAuth failed to start', {
+        action: 'signInWithGoogle',
+        reason: error.message,
+        redirectUrl: redirectUrl.toString(),
+      });
+      return { error: 'Unable to start Google login.' };
+    }
+
+    if (data.url) {
+      log.info('Google OAuth started', {
+        action: 'signInWithGoogle',
+        redirectUrl: redirectUrl.toString(),
+      });
+      return { url: data.url };
+    }
+  } catch (error) {
+    log.error('Google OAuth failed unexpectedly', error, { action: 'signInWithGoogle' });
+    return { error: 'Unable to start Google login.' };
   }
 
   log.warn('Google OAuth failed to start', { action: 'signInWithGoogle' });

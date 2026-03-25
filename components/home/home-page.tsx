@@ -35,7 +35,7 @@ export function HomePage({ initialCredits = null, initialIsAuthenticated = false
         onOpenLogin={() => openAuthDialog('login', '/')}
         onOpenSignup={() => openAuthDialog('signup', '/')}
         showMarketingLinks={false}
-        isAuthenticatedOverride={initialIsAuthenticated}
+        isAuthenticatedOverride={loading && initialIsAuthenticated}
       />
       <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-3 pb-6 pt-4 md:px-6 md:pb-10 md:pt-6">
         <div className="space-y-3 px-2 text-center md:px-0">
