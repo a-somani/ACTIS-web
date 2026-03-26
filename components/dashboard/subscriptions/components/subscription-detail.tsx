@@ -6,10 +6,10 @@ import { SubscriptionPastPaymentsCard } from '@/components/dashboard/subscriptio
 import { SubscriptionNextPaymentCard } from '@/components/dashboard/subscriptions/components/subscription-next-payment-card';
 import { SubscriptionLineItems } from '@/components/dashboard/subscriptions/components/subscription-line-items';
 import { SubscriptionHeader } from '@/components/dashboard/subscriptions/components/subscription-header';
-import { Separator } from '@/components/ui/separator';
 import { ErrorContent } from '@/components/dashboard/layout/error-content';
 import { useCallback, useEffect, useState } from 'react';
 import { LoadingScreen } from '@/components/dashboard/layout/loading-screen';
+import { DashboardPageHeader } from '@/components/dashboard/layout/dashboard-page-header';
 import { SubscriptionDetailResponse, TransactionResponse } from '@/lib/api.types';
 
 interface Props {
@@ -47,21 +47,21 @@ export function SubscriptionDetail({ subscriptionId }: Props) {
     return <LoadingScreen />;
   } else if (subscription?.data && transactions?.data) {
     return (
-      <>
-        <div>
+      <div className="space-y-4 md:space-y-5">
+        <DashboardPageHeader pageTitle={'Subscriptions'} compact />
+        <div className="rounded-[28px] border border-border bg-background/40 p-4 backdrop-blur-[24px] md:p-5">
           <SubscriptionHeader subscription={subscription.data} onCanceled={refetch} />
-          <Separator className={'relative bg-border mb-8 dashboard-header-highlight'} />
         </div>
-        <div className={'grid gap-6 grid-cols-1 xl:grid-cols-6'}>
-          <div className={'grid auto-rows-max gap-6 grid-cols-1 xl:col-span-2'}>
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,320px)_minmax(0,1fr)] xl:gap-5">
+          <div className="grid auto-rows-max grid-cols-1 gap-4 xl:gap-5">
             <SubscriptionNextPaymentCard transactions={transactions.data} subscription={subscription.data} />
             <SubscriptionPastPaymentsCard transactions={transactions.data} subscriptionId={subscriptionId} />
           </div>
-          <div className={'grid auto-rows-max gap-6 grid-cols-1 xl:col-span-4'}>
+          <div className="grid auto-rows-max grid-cols-1 gap-4 xl:gap-5">
             <SubscriptionLineItems subscription={subscription.data} />
           </div>
         </div>
-      </>
+      </div>
     );
   } else {
     return <ErrorContent />;

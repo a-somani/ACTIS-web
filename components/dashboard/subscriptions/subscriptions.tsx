@@ -19,7 +19,7 @@ export async function Subscriptions() {
   if (subscriptions) {
     if (subscriptions.length === 0) {
       return (
-        <div className="space-y-8">
+        <div className="space-y-6">
           <CreditsSummaryCard summary={creditSummary} />
           <NoSubscriptionView />
           <CreditPackCards />
@@ -27,7 +27,7 @@ export async function Subscriptions() {
       );
     } else if (subscriptions.length === 1) {
       return (
-        <div className="space-y-8">
+        <div className="space-y-6">
           <CreditsSummaryCard summary={creditSummary} />
           <SubscriptionDetail subscriptionId={subscriptions[0].id} />
           <CreditPackCards />
@@ -35,7 +35,7 @@ export async function Subscriptions() {
       );
     } else {
       return (
-        <div className="space-y-8">
+        <div className="space-y-6">
           <CreditsSummaryCard summary={creditSummary} />
           <MultipleSubscriptionsView subscriptions={subscriptions} />
           <CreditPackCards />

@@ -14,15 +14,15 @@ export function SubscriptionNextPaymentCard({ subscription, transactions }: Prop
     return null;
   }
   return (
-    <Card className={'bg-background/50 backdrop-blur-[24px] border-border p-6 @container'}>
-      <div className={'flex gap-6 flex-col border-border border-b pb-6'}>
-        <div className={'text-xl font-medium'}>Next payment</div>
-        <div className={'flex gap-1 items-end @16xs:flex-wrap'}>
-          <span className={'text-xl leading-5 font-medium text-primary'}>
+    <Card className="border-border bg-background/50 p-4 backdrop-blur-[24px] @container md:p-5">
+      <div className="flex flex-col gap-4 border-b border-border pb-4">
+        <div className="text-lg font-medium">Next payment</div>
+        <div className="flex flex-wrap items-end gap-1">
+          <span className="text-lg font-medium leading-5 text-primary">
             {parseMoney(subscription?.nextTransaction?.details.totals.total, subscription?.currencyCode)}
           </span>
-          <span className={'text-base text-secondary leading-4'}>due</span>
-          <span className={'ext-base leading-4 font-semibold text-primary'}>
+          <span className="text-sm leading-4 text-secondary">due</span>
+          <span className="text-sm font-semibold leading-4 text-primary md:text-base">
             {dayjs(subscription?.nextBilledAt).format('MMM DD, YYYY')}
           </span>
         </div>

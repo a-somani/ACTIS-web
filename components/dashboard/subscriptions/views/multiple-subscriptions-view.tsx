@@ -9,8 +9,8 @@ interface Props {
 export function MultipleSubscriptionsView({ subscriptions }: Props) {
   return (
     <>
-      <DashboardPageHeader pageTitle={'Subscriptions'} />
-      <SubscriptionCards className={'grid-cols-1 lg:grid-cols-3 gap-6'} subscriptions={subscriptions} />
+      <DashboardPageHeader pageTitle={'Subscriptions'} compact />
+      <SubscriptionCards className={'grid-cols-1 gap-4 lg:grid-cols-3'} subscriptions={subscriptions} />
     </>
   );
 }

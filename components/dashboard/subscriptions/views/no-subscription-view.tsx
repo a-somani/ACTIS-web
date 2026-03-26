@@ -7,10 +7,10 @@ import { Album } from 'lucide-react';
 export function NoSubscriptionView() {
   return (
     <>
-      <DashboardPageHeader pageTitle={'Subscriptions'} />
+      <DashboardPageHeader pageTitle={'Subscriptions'} compact />
       <div className={'grid grid-cols-12'}>
         <Card
-          className={'bg-background/50 backdrop-blur-[24px] border-border p-6 col-span-12 md:col-span-6 lg:col-span-4'}
+          className={'bg-background/50 backdrop-blur-[24px] border-border p-5 col-span-12 md:col-span-6 lg:col-span-4'}
         >
           <CardHeader className="p-0 space-y-0">
             <div className="flex items-center gap-3 pb-2">

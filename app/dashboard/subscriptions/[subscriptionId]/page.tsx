@@ -8,7 +8,7 @@ import { SubscriptionDetail } from '@/components/dashboard/subscriptions/compone
 export default function SubscriptionPage() {
   const { subscriptionId } = useParams<{ subscriptionId: string }>();
   return (
-    <main className="p-4 lg:gap-6 lg:p-8">
+    <main className="min-w-0 p-4 lg:gap-5 lg:p-8">
       <Suspense fallback={<LoadingScreen />}>
         <SubscriptionDetail subscriptionId={subscriptionId} />
       </Suspense>

@@ -14,9 +14,9 @@ interface Props {
 
 export function SubscriptionPastPaymentsCard({ subscriptionId, transactions }: Props) {
   return (
-    <Card className={'bg-background/50 backdrop-blur-[24px] border-border p-6 @container'}>
-      <CardTitle className="flex justify-between items-center pb-6 border-border border-b flex-wrap">
-        <span className={'text-xl font-medium'}>Payments</span>
+    <Card className="border-border bg-background/50 p-4 backdrop-blur-[24px] @container md:p-5">
+      <CardTitle className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+        <span className="text-lg font-medium">Payments</span>
         <Button asChild={true} size={'sm'} variant={'outline'} className={'text-sm rounded-sm border-border'}>
           <Link href={`/dashboard/payments/${subscriptionId}`}>View all</Link>
         </Button>
@@ -25,18 +25,18 @@ export function SubscriptionPastPaymentsCard({ subscriptionId, transactions }: P
         {transactions?.slice(0, 3).map((transaction) => {
           const formattedPrice = parseMoney(transaction.details?.totals?.total, transaction.currencyCode);
           return (
-            <div key={transaction.id} className={'flex flex-col gap-4 border-border border-b py-6'}>
-              <div className={'text-secondary text-base leading-4'}>
+            <div key={transaction.id} className="flex flex-col gap-3 border-b border-border py-4 last:border-b-0 last:pb-0">
+              <div className="text-sm leading-4 text-secondary">
                 {dayjs(transaction.billedAt ?? transaction.createdAt).format('MMM DD, YYYY')}
               </div>
-              <div className={'flex-wrap flex items-center gap-5'}>
-                <span className={'font-semibold text-base leading-4'}>{getPaymentReason(transaction.origin)}</span>
-                <span className={'text-base leading-6 text-secondary'}>
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-sm font-semibold leading-4 md:text-base">{getPaymentReason(transaction.origin)}</span>
+                <span className="text-sm leading-5 text-secondary md:text-base">
                   {transaction.details?.lineItems[0].product?.name}
                 </span>
               </div>
-              <div className={'flex gap-5 items-center flex-wrap'}>
-                <div className={'text-base leading-4 font-semibold'}>{formattedPrice}</div>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="text-sm font-semibold leading-4 md:text-base">{formattedPrice}</div>
                 <Status status={transaction.status} />
               </div>
             </div>

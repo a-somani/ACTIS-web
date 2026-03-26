@@ -9,12 +9,12 @@ export function CreditsSummaryCard({ summary }: { summary: CreditSummaryResponse
   const tierName = summary?.activeTierName ?? 'No active plan';
 
   return (
-    <Card className="border-border bg-background/50 p-6 backdrop-blur-[24px]">
+    <Card className="border-border bg-background/50 p-4 backdrop-blur-[24px] md:p-5">
       <CardHeader className="space-y-1 p-0">
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Credits</p>
-        <CardTitle className="text-2xl font-semibold">Usage snapshot</CardTitle>
+        <CardTitle className="text-xl font-semibold md:text-2xl">Usage snapshot</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-4 p-0 pt-5 md:grid-cols-3">
+      <CardContent className="grid gap-3 p-0 pt-4 md:grid-cols-3">
         <SummaryItem
           icon={<Coins className="h-4 w-4" />}
           label="Available now"
@@ -50,13 +50,13 @@ function SummaryItem({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-      <div className="mb-3 flex items-center gap-2 text-primary">
+    <div className="rounded-2xl border border-border/70 bg-background/70 p-3.5 md:p-4">
+      <div className="mb-2 flex items-center gap-2 text-primary">
         {icon}
         <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">{label}</span>
       </div>
-      <p className="text-2xl font-semibold">{value}</p>
-      <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+      <p className="text-xl font-semibold md:text-2xl">{value}</p>
+      <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>
     </div>
   );
 }

@@ -11,9 +11,9 @@ interface Props {
 
 export function DashboardLayout({ children }: Props) {
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] relative overflow-hidden">
+    <div className="relative grid min-h-screen w-full overflow-x-hidden md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <DashboardGradient />
-      <div className="hidden border-r md:block relative">
+      <div className="relative hidden border-r md:sticky md:top-0 md:block md:h-screen">
         <div className="flex h-full flex-col gap-2">
           <div className="flex items-center pt-8 pl-6 pb-10">
             <Link href="/" className="flex items-center gap-2 font-semibold">
@@ -26,7 +26,7 @@ export function DashboardLayout({ children }: Props) {
           </div>
         </div>
       </div>
-      <div className="flex flex-col">{children}</div>
+      <div className="flex min-w-0 flex-col">{children}</div>
     </div>
   );
 }
