@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { OTPInput, REGEXP_ONLY_DIGITS, type SlotProps } from 'input-otp';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -11,91 +11,65 @@ interface Props {
   onComplete?: (value: string) => void;
 }
 
-function normalizeOtpValue(value: string, length: number): string {
-  return value.replace(/\D/g, '').slice(0, length);
-}
-
 export function OtpCodeInput({ value, length = 6, disabled = false, onChange, onComplete }: Props) {
-  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
-  const digits = useMemo(() => Array.from({ length }, (_, index) => value[index] ?? ''), [length, value]);
-
-  function emitNextValue(nextValue: string) {
-    const normalized = normalizeOtpValue(nextValue, length);
-    onChange(normalized);
-
-    if (normalized.length === length) {
-      onComplete?.(normalized);
-    }
-  }
-
-  function focusInput(index: number) {
-    inputRefs.current[index]?.focus();
-    inputRefs.current[index]?.select();
-  }
+  const splitIndex = Math.ceil(length / 2);
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3">
-      {digits.map((digit, index) => (
-        <input
-          key={index}
-          ref={(node) => {
-            inputRefs.current[index] = node;
-          }}
-          type="text"
-          inputMode="numeric"
-          autoComplete={index === 0 ? 'one-time-code' : 'off'}
-          pattern="[0-9]*"
-          maxLength={1}
-          value={digit}
-          disabled={disabled}
-          aria-label={`Digit ${index + 1}`}
-          className={cn(
-            'h-12 w-11 rounded-xl border border-input bg-background text-center text-lg font-semibold text-foreground',
-            'focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-            'disabled:cursor-not-allowed disabled:opacity-50 sm:h-14 sm:w-12'
-          )}
-          onFocus={(event) => event.currentTarget.select()}
-          onChange={(event) => {
-            const typedValue = normalizeOtpValue(event.target.value, 1);
-            const nextDigits = [...digits];
-            nextDigits[index] = typedValue;
-            const nextValue = nextDigits.join('');
-            emitNextValue(nextValue);
+    <OTPInput
+      value={value}
+      onChange={onChange}
+      onComplete={onComplete}
+      maxLength={length}
+      pattern={REGEXP_ONLY_DIGITS}
+      disabled={disabled}
+      textAlign="center"
+      pushPasswordManagerStrategy="none"
+      pasteTransformer={(pasted) => pasted.replace(/\D/g, '')}
+      containerClassName="w-full"
+      render={({ slots }) => (
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div
+            className="grid min-w-0 flex-1 gap-2 sm:gap-3"
+            style={{ gridTemplateColumns: `repeat(${splitIndex}, minmax(0, 1fr))` }}
+          >
+            {slots.slice(0, splitIndex).map((slot, index) => (
+              <OtpSlot key={index} {...slot} />
+            ))}
+          </div>
+          {length > 4 ? <OtpDivider /> : null}
+          <div
+            className="grid min-w-0 flex-1 gap-2 sm:gap-3"
+            style={{ gridTemplateColumns: `repeat(${length - splitIndex}, minmax(0, 1fr))` }}
+          >
+            {slots.slice(splitIndex).map((slot, index) => (
+              <OtpSlot key={splitIndex + index} {...slot} />
+            ))}
+          </div>
+        </div>
+      )}
+    />
+  );
+}
 
-            if (typedValue && index < length - 1) {
-              focusInput(index + 1);
-            }
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'Backspace' && !digits[index] && index > 0) {
-              const nextDigits = [...digits];
-              nextDigits[index - 1] = '';
-              emitNextValue(nextDigits.join(''));
-              focusInput(index - 1);
-            }
-
-            if (event.key === 'ArrowLeft' && index > 0) {
-              event.preventDefault();
-              focusInput(index - 1);
-            }
-
-            if (event.key === 'ArrowRight' && index < length - 1) {
-              event.preventDefault();
-              focusInput(index + 1);
-            }
-          }}
-          onPaste={(event) => {
-            event.preventDefault();
-            const pasted = normalizeOtpValue(event.clipboardData.getData('text'), length);
-            if (!pasted) {
-              return;
-            }
-
-            emitNextValue(pasted);
-            focusInput(Math.min(pasted.length, length) - 1);
-          }}
-        />
-      ))}
+function OtpSlot({ char, isActive, hasFakeCaret }: SlotProps) {
+  return (
+    <div
+      className={cn(
+        'relative flex h-11 w-full min-w-0 items-center justify-center rounded-xl border border-input bg-background text-base font-semibold text-foreground',
+        'transition-colors sm:h-14 sm:text-lg',
+        isActive && 'border-ring ring-2 ring-ring ring-offset-2 ring-offset-background'
+      )}
+    >
+      <span>{char}</span>
+      {hasFakeCaret ? (
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <span className="h-5 w-px animate-pulse bg-foreground/70 sm:h-6" />
+        </span>
+      ) : null}
     </div>
   );
+}
+
+function OtpDivider() {
+  return <div className="h-px w-3 shrink-0 rounded-full bg-border sm:w-4" />;
 }

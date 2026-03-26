@@ -68,7 +68,7 @@ export function AuthDialogPanel({
           <Label className="text-muted-foreground leading-5" htmlFor="auth-code">
             One-time code
           </Label>
-          <OtpCodeInput value={code} onChange={onCodeChange} onComplete={onVerifyCode} disabled={isSubmitting} />
+          <OtpCodeInput value={code} length={6} onChange={onCodeChange} onComplete={onVerifyCode} disabled={isSubmitting} />
         </div>
       ) : null}
 
