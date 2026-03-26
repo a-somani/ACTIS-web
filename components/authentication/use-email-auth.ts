@@ -70,13 +70,6 @@ export function useEmailAuth({
       };
     }
 
-    if (lookup?.status === 'google_and_email') {
-      return {
-        title: 'Choose how to continue',
-        description: 'This email can sign in with Google or a one-time email code.',
-      };
-    }
-
     return {
       title: 'Continue to ACTIS',
       description: 'Enter your email and we will guide you to the right next step.',
@@ -138,7 +131,7 @@ export function useEmailAuth({
       setEmail(result.email);
       setLookup(result);
 
-      if (result.status === 'new_user' || result.status === 'email_only') {
+      if (result.status === 'new_user' || result.status === 'email_only' || result.status === 'google_and_email') {
         await requestEmailCode(result.status);
         return;
       }
@@ -147,8 +140,6 @@ export function useEmailAuth({
         setMessage('Use Google to continue with this account.');
         return;
       }
-
-      setMessage('Choose Google or request a one-time email code.');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Unable to check this email right now.');
     } finally {

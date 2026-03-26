@@ -17,15 +17,15 @@ interface Props {
 
 function EmptyState() {
   return (
-    <div className="rounded-[28px] border border-white/10 bg-black/25 p-8 text-center">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-black/40">
-        <Sparkles className="h-6 w-6 text-primary" />
+    <div className="rounded-[24px] border border-white/10 bg-black/25 p-6 text-center">
+      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-black/40">
+        <Sparkles className="h-5 w-5 text-primary" />
       </div>
-      <h2 className="mt-5 text-2xl font-semibold">No generations yet</h2>
-      <p className="mx-auto mt-3 max-w-md text-sm text-white/60">
+      <h2 className="mt-4 text-xl font-semibold">No generations yet</h2>
+      <p className="mx-auto mt-2 max-w-md text-sm text-white/60">
         Your saved ACTIS creates will appear here once you generate and store your first result.
       </p>
-      <Button asChild className="mt-6">
+      <Button asChild className="mt-5">
         <Link href="/dashboard/create">Open Create</Link>
       </Button>
     </div>
@@ -118,7 +118,7 @@ function HistoryCard({ record }: { record: CreateGenerationRecord }) {
 export function CreateHistoryPage({ records }: Props) {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-4 p-4 lg:gap-6 lg:p-8">
-      <DashboardPageHeader pageTitle="History" />
+      <DashboardPageHeader pageTitle="History" compact />
       {records.length === 0 ? (
         <EmptyState />
       ) : (

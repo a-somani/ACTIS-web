@@ -32,7 +32,6 @@ interface CreateWorkbenchProps {
   isAuthenticated?: boolean;
   onRequireAuth?: () => void;
   showDashboardChrome?: boolean;
-  compactMode?: 'default' | 'landing';
 }
 
 export function CreateWorkbench({
@@ -40,7 +39,6 @@ export function CreateWorkbench({
   isAuthenticated = true,
   onRequireAuth,
   showDashboardChrome = true,
-  compactMode = 'default',
 }: CreateWorkbenchProps) {
   const galleryInputRef = useRef<HTMLInputElement | null>(null);
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
@@ -68,7 +66,6 @@ export function CreateWorkbench({
   } = useCreateWorkbench({ initialCredits, isAuthenticated, onRequireAuth });
 
   const generateLabel = isAuthenticated ? `Generate ${credits?.generationCost ?? 10} credits` : 'Continue to generate';
-  const isLandingCompact = compactMode === 'landing';
 
   const handleSelect = (files: FileList | null) => {
     const file = files?.[0] ?? null;
@@ -114,7 +111,9 @@ export function CreateWorkbench({
         onChange={(e) => handleSelect(e.target.files)}
       />
 
-      <div className={cn('relative z-10 p-4 md:p-8', isLandingCompact ? 'space-y-4 md:space-y-5' : 'space-y-6 md:space-y-8')}>
+      <div
+        className={cn('relative z-10 space-y-4 p-4 md:space-y-5 md:p-8')}
+      >
         <CreateTopbar
           balance={credits?.balance ?? 0}
           generationCost={credits?.generationCost ?? 10}
@@ -126,42 +125,17 @@ export function CreateWorkbench({
           onActionClick={!isAuthenticated ? onRequireAuth : undefined}
         />
 
-        {!isLandingCompact ? (
-          <div className="mx-auto max-w-4xl space-y-6 text-center">
-            <div className="space-y-3">
-              <h2 className="text-4xl font-semibold tracking-[-0.04em] text-balance md:text-7xl">
-                {resultImage ? 'Share what you created.' : 'Create with ACTIS.'}
-              </h2>
-              <p className="mx-auto max-w-2xl text-base text-white/70 md:text-2xl">
-                {isGenerating ? (phaseMessage ?? 'Transforming your image with ACTIS Create') : 'Expand, frame, and share in one studio flow.'}
-              </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {CreateStepItems.map((step, index) => (
+            <div
+              key={step.id}
+              className="min-w-[104px] rounded-full border border-white/10 bg-black/35 px-3 py-2 text-center backdrop-blur-xl"
+            >
+              <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-primary/90">0{index + 1}</p>
+              <p className="mt-1 text-xs font-semibold text-white md:text-sm">{step.label}</p>
             </div>
-
-            <div className="grid gap-3 text-left sm:grid-cols-3">
-              {CreateStepItems.map((step, index) => (
-                <div
-                  key={step.id}
-                  className="rounded-[28px] border border-white/10 bg-black/45 px-5 py-4 backdrop-blur-xl"
-                >
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary/90">Step 0{index + 1}</p>
-                  <p className="mt-2 text-lg font-semibold text-white">{step.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="grid gap-2 text-left sm:grid-cols-3">
-            {CreateStepItems.map((step, index) => (
-              <div
-                key={step.id}
-                className="rounded-[24px] border border-white/10 bg-black/40 px-3 py-3 backdrop-blur-xl"
-              >
-                <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-primary/90">0{index + 1}</p>
-                <p className="mt-1 text-sm font-semibold text-white md:text-base">{step.label}</p>
-              </div>
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
 
         <div className="grid gap-4 xl:grid-cols-[220px_minmax(0,1fr)]">
           <aside className="order-2 hidden space-y-3 xl:order-1 xl:block">
