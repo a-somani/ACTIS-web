@@ -5,7 +5,7 @@ import { SubscriptionsBillingSync } from '@/components/dashboard/subscriptions/s
 
 export default async function SubscriptionsListPage() {
   return (
-    <main className="min-w-0 p-4 lg:gap-5 lg:p-8">
+    <main className="min-w-0 p-3 md:p-4 lg:gap-5 lg:p-8">
       <SubscriptionsBillingSync />
       <Suspense fallback={<LoadingScreen />}>
         <Subscriptions />

@@ -47,7 +47,7 @@ export function AuthDialogPanel({
   onToggleMode,
 }: Props) {
   return (
-    <div className="flex flex-col gap-6 px-6 pb-6 pt-2">
+    <div className="flex flex-col gap-5 px-4 pb-5 pt-2 md:gap-6 md:px-6 md:pb-6">
       <div className="grid gap-1.5">
         <Label className="text-muted-foreground leading-5" htmlFor="auth-email">
           Email address

@@ -10,7 +10,7 @@ interface Props {
 
 export function SubscriptionLineItems({ subscription }: Props) {
   return (
-    <Card className="border-border bg-background/50 p-4 backdrop-blur-[24px] md:p-5">
+    <Card className="border-0 bg-background/35 p-4 shadow-none md:p-5">
       <CardTitle className="flex items-center justify-between border-b border-border pb-4">
         <span className="text-lg font-medium">Recurring products</span>
       </CardTitle>

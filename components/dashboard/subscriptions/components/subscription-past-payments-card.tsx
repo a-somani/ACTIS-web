@@ -14,7 +14,7 @@ interface Props {
 
 export function SubscriptionPastPaymentsCard({ subscriptionId, transactions }: Props) {
   return (
-    <Card className="border-border bg-background/50 p-4 backdrop-blur-[24px] @container md:p-5">
+    <Card className="border-0 bg-background/35 p-4 shadow-none @container md:p-5">
       <CardTitle className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
         <span className="text-lg font-medium">Payments</span>
         <Button asChild={true} size={'sm'} variant={'outline'} className={'text-sm rounded-sm border-border'}>

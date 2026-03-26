@@ -1,7 +1,6 @@
 'use client';
 
 import { PriceSection } from '@/components/checkout/price-section';
-import { CheckoutFormGradients } from '@/components/gradients/checkout-form-gradients';
 import { resolveSiteUrl } from '@/utils/site-url';
 import { type Environments, initializePaddle, type Paddle } from '@paddle/paddle-js';
 import type { CheckoutEventsData } from '@paddle/paddle-js/types/checkout/events';
@@ -88,12 +87,7 @@ export function CheckoutContents({ userEmail }: Props) {
 
   if (!hasCheckoutTarget) {
     return (
-      <div
-        className={
-          'rounded-lg md:bg-background/80 md:backdrop-blur-[24px] md:p-10 md:pl-16 md:pt-16 md:min-h-[400px] flex flex-col justify-center relative'
-        }
-      >
-        <CheckoutFormGradients />
+      <div className={'relative flex min-h-[400px] flex-col justify-center rounded-lg border border-border bg-background p-6 md:p-10 md:pl-16 md:pt-16'}>
         <div className={'max-w-lg text-sm text-white/75'}>
           This checkout page is used for Paddle payment links. Open it from a checkout flow or transaction email to continue.
         </div>
@@ -102,12 +96,7 @@ export function CheckoutContents({ userEmail }: Props) {
   }
 
   return (
-    <div
-      className={
-        'rounded-lg md:bg-background/80 md:backdrop-blur-[24px] md:p-10 md:pl-16 md:pt-16 md:min-h-[400px] flex flex-col justify-between relative'
-      }
-    >
-      <CheckoutFormGradients />
+    <div className={'relative flex min-h-[400px] flex-col justify-between rounded-lg border border-border bg-background p-6 md:p-10 md:pl-16 md:pt-16'}>
       <div className={'flex flex-col md:flex-row gap-8 md:gap-16'}>
         <div className={'w-full md:w-[400px]'}>
           <PriceSection

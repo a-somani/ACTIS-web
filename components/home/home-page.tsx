@@ -37,7 +37,7 @@ export function HomePage({ initialCredits = null, initialIsAuthenticated = false
         showMarketingLinks={false}
         isAuthenticatedOverride={loading && initialIsAuthenticated}
       />
-      <main className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-3 pb-4 pt-2 md:gap-4 md:px-6 md:pb-10 md:pt-4">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-3 pb-4 pt-2 md:px-5 md:pb-8 md:pt-4">
         <CreateWorkbench
           initialCredits={initialCredits}
           isAuthenticated={isAuthenticated}

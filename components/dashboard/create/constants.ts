@@ -3,9 +3,9 @@ import { CreateGenerationCreditCost } from '@/utils/credits';
 export const CreateDefaultRatio = '1:1';
 
 export const CreateStepItems = [
-  { id: 'upload', label: 'Upload your image' },
+  { id: 'upload', label: 'Upload' },
   { id: 'generate', label: 'Generate' },
-  { id: 'share', label: 'Share' },
+  { id: 'download', label: 'Download' },
 ] as const;
 
 export const CreateRatioOptions = [

@@ -3,7 +3,6 @@
 import { getTransactions } from '@/utils/paddle/get-transactions';
 import { ErrorContent } from '@/components/dashboard/layout/error-content';
 import { DataTable } from '@/components/dashboard/payments/components/data-table';
-import { columns } from '@/components/dashboard/payments/components/columns';
 import { useEffect, useState } from 'react';
 import { LoadingScreen } from '@/components/dashboard/layout/loading-screen';
 import { usePagination } from '@/hooks/usePagination';
@@ -47,7 +46,6 @@ export function PaymentsContent({ subscriptionId }: Props) {
   return (
     <div>
       <DataTable
-        columns={columns}
         hasMore={hasMore}
         totalRecords={totalRecords}
         goToNextPage={goToNextPage}

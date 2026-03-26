@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Coins, Sparkles } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CreditPacks } from '@/utils/credit-packs';
 
@@ -21,11 +20,11 @@ export function CreditPackCards() {
 
       <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:px-0 lg:grid-cols-3">
         {CreditPacks.map((pack) => (
-          <Card
+          <section
             key={pack.id}
-            className="min-w-[240px] shrink-0 border-border bg-background p-3.5 sm:min-w-0 sm:p-4 md:p-5"
+            className="min-w-[240px] shrink-0 space-y-3 rounded-2xl bg-background/35 p-3 sm:min-w-0 sm:p-4 md:p-5"
           >
-            <CardHeader className="space-y-0 p-0">
+            <div className="space-y-0">
               <div className="mb-2.5 flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <Coins className="h-4 w-4" />
@@ -35,15 +34,15 @@ export function CreditPackCards() {
                   {pack.credits} credits
                 </span>
               </div>
-              <CardTitle className="text-base font-medium md:text-xl">{pack.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 p-0 pt-3">
+              <h3 className="text-base font-medium md:text-xl">{pack.name}</h3>
+            </div>
+            <div className="space-y-3">
               <p className="text-xs leading-4 text-muted-foreground md:text-sm md:leading-5">{pack.description}</p>
               <Button asChild className="h-10 w-full rounded-md">
                 <Link href={`/checkout/${pack.priceId}`}>Buy credits</Link>
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         ))}
       </div>
     </section>

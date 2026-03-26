@@ -20,7 +20,7 @@ export async function Subscriptions() {
   if (subscriptions) {
     if (subscriptions.length === 0) {
       return (
-        <div className="space-y-5">
+        <div className="space-y-4 md:space-y-5">
           <DashboardPageHeader pageTitle={'Subscriptions'} compact />
           <CreditsSummaryCard summary={creditSummary} />
           <NoSubscriptionView showHeader={false} />
@@ -29,7 +29,7 @@ export async function Subscriptions() {
       );
     } else if (subscriptions.length === 1) {
       return (
-        <div className="space-y-5">
+        <div className="space-y-4 md:space-y-5">
           <DashboardPageHeader pageTitle={'Subscriptions'} compact />
           <CreditsSummaryCard summary={creditSummary} />
           <SubscriptionDetail subscriptionId={subscriptions[0].id} showHeader={false} />
@@ -38,7 +38,7 @@ export async function Subscriptions() {
       );
     } else {
       return (
-        <div className="space-y-5">
+        <div className="space-y-4 md:space-y-5">
           <DashboardPageHeader pageTitle={'Subscriptions'} compact />
           <CreditsSummaryCard summary={creditSummary} />
           <MultipleSubscriptionsView subscriptions={subscriptions} showHeader={false} />

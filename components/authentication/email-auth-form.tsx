@@ -48,15 +48,15 @@ export function EmailAuthForm({ mode, nextPath = '/dashboard' }: Props) {
   }
 
   return (
-    <div className="px-6 pb-6 pt-8 md:px-16">
-      <div className="flex flex-col items-center gap-6">
-        <span className="text-3xl font-bold tracking-tight text-foreground">ACTIS</span>
-        <div className="text-center text-[30px] font-medium leading-[36px] tracking-[-0.6px]">{copy.title}</div>
+    <div className="px-4 pb-5 pt-6 md:px-16">
+      <div className="flex flex-col items-center gap-4 md:gap-6">
+        <span className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">ACTIS</span>
+        <div className="text-center text-2xl font-medium leading-[1.15] tracking-[-0.4px] md:text-[30px] md:leading-[36px] md:tracking-[-0.6px]">{copy.title}</div>
         <p className="text-center text-sm text-muted-foreground">{copy.description}</p>
       </div>
 
       {isGuestLoginEnabled ? (
-        <div className="mt-6 flex flex-col gap-6">
+        <div className="mt-5 flex flex-col gap-5 md:mt-6 md:gap-6">
           <Button type="button" variant="secondary" className="w-full" disabled={isSubmitting} onClick={handleAnonymousLogin}>
             Continue as Guest
           </Button>

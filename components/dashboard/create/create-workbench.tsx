@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { ChevronDown, HelpCircle, Sparkles } from 'lucide-react';
+import { HelpCircle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { CreateBackground } from '@/components/dashboard/create/create-background';
 import { CreateBestPracticesDialog } from '@/components/dashboard/create/create-best-practices-dialog';
@@ -41,7 +41,6 @@ export function CreateWorkbench({
   showDashboardChrome = true,
 }: CreateWorkbenchProps) {
   const galleryInputRef = useRef<HTMLInputElement | null>(null);
-  const cameraInputRef = useRef<HTMLInputElement | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
   const {
     credits,
@@ -73,7 +72,7 @@ export function CreateWorkbench({
     setSourceFile(file);
   };
 
-  const handleGalleryAction = () => {
+  const handleUploadAction = () => {
     if (!isAuthenticated) {
       onRequireAuth?.();
       return;
@@ -82,31 +81,14 @@ export function CreateWorkbench({
     galleryInputRef.current?.click();
   };
 
-  const handleCameraAction = () => {
-    if (!isAuthenticated) {
-      onRequireAuth?.();
-      return;
-    }
-
-    cameraInputRef.current?.click();
-  };
-
   return (
-    <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-black text-white shadow-2xl">
+    <section className="relative overflow-hidden rounded-[28px] bg-black/95 text-white">
       <CreateBackground />
 
       <input
         ref={galleryInputRef}
         type="file"
         accept="image/*"
-        className="hidden"
-        onChange={(e) => handleSelect(e.target.files)}
-      />
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
         className="hidden"
         onChange={(e) => handleSelect(e.target.files)}
       />
@@ -125,11 +107,11 @@ export function CreateWorkbench({
           onActionClick={!isAuthenticated ? onRequireAuth : undefined}
         />
 
-        <div className="flex flex-wrap justify-center gap-2">
+        <div className="grid grid-cols-3 gap-2 rounded-[22px] bg-white/[0.04] p-2">
           {CreateStepItems.map((step, index) => (
             <div
               key={step.id}
-              className="min-w-[104px] rounded-full border border-white/10 bg-black/35 px-3 py-2 text-center backdrop-blur-xl"
+              className="rounded-[18px] px-2 py-2 text-center"
             >
               <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-primary/90">0{index + 1}</p>
               <p className="mt-1 text-xs font-semibold text-white md:text-sm">{step.label}</p>
@@ -149,7 +131,7 @@ export function CreateWorkbench({
             </div>
             <div className="grid grid-cols-3 gap-3 xl:grid-cols-1">
               {history.length === 0 ? (
-                <div className="col-span-full rounded-[28px] border border-dashed border-white/10 bg-black/25 p-4 text-sm text-white/50">
+                <div className="col-span-full rounded-[24px] bg-white/[0.04] p-4 text-sm text-white/50">
                   Your recent generations appear here.
                 </div>
               ) : (
@@ -158,12 +140,12 @@ export function CreateWorkbench({
                     key={item.id}
                     type="button"
                     onClick={() => restoreHistoryItem(item)}
-                    className="overflow-hidden rounded-[28px] border border-white/10 bg-black/30 p-1 transition-transform hover:-translate-y-0.5"
+                    className="overflow-hidden rounded-[24px] bg-white/[0.04] p-1 transition-transform hover:-translate-y-0.5"
                   >
                     <img
                       src={item.resultImage}
                       alt={item.fileName}
-                      className="aspect-square w-full rounded-[24px] object-cover"
+                      className="aspect-square w-full rounded-[20px] object-cover"
                     />
                   </button>
                 ))
@@ -171,43 +153,36 @@ export function CreateWorkbench({
             </div>
           </aside>
 
-          <div className="order-1 rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(25,28,39,0.88),rgba(11,13,18,0.92))] shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl xl:order-2">
+          <div className="order-1 rounded-[28px] bg-[linear-gradient(180deg,rgba(25,28,39,0.96),rgba(11,13,18,0.98))] xl:order-2">
             <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 md:px-5 md:py-4">
               <div className="flex items-center gap-3">
                 <Sparkles className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="text-base font-semibold md:text-lg">ACTIS Create</p>
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-white/45 md:text-xs">
-                    Best-practice guided workflow
-                  </p>
-                </div>
+                <p className="text-base font-semibold md:text-lg">ACTIS Create</p>
               </div>
 
               <CreateBestPracticesDialog>
                 <button type="button" className="inline-flex items-center gap-2 text-xs font-semibold text-white/70 md:text-sm">
-                  <span className="hidden sm:inline">BEST PRACTICES</span>
-                  <span className="sm:hidden">TIPS</span>
+                  <span>TIPS</span>
                   <HelpCircle className="h-4 w-4" />
-                  <ChevronDown className="h-4 w-4" />
                 </button>
               </CreateBestPracticesDialog>
             </div>
 
             <div className="space-y-4 p-4 md:space-y-6 md:p-6">
               {isSyncingBilling && (
-                <div className="rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-white/85">
+                <div className="rounded-2xl bg-primary/12 px-4 py-3 text-sm text-white/85">
                   Payment received. Syncing your credits and plan updates...
                 </div>
               )}
 
               {(error || creditsError) && (
-                <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive-foreground">
+                <div className="rounded-2xl bg-destructive/12 px-4 py-3 text-sm text-destructive-foreground">
                   {error ?? creditsError}
                 </div>
               )}
 
               {!isAuthenticated && !sourcePreviewUrl && (
-                <div className="rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-white/85">
+                <div className="rounded-2xl bg-primary/12 px-4 py-3 text-sm text-white/85">
                   Choose an image to get started, then continue into create.
                 </div>
               )}
@@ -215,8 +190,7 @@ export function CreateWorkbench({
               {!sourcePreviewUrl && (
                 <EmptyUploadState
                   isLoadingCredits={isLoadingCredits}
-                  onCamera={handleCameraAction}
-                  onGallery={handleGalleryAction}
+                  onUpload={handleUploadAction}
                 />
               )}
 

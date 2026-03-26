@@ -25,17 +25,17 @@ export function SubscriptionHeader({ subscription, onCanceled }: Props) {
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-      <div className="w-full space-y-4">
+      <div className="w-full space-y-3 md:space-y-4">
         <SubscriptionAlerts subscription={subscription} />
         <div className="flex items-center gap-3 md:gap-4">
           {subscriptionItem.product.imageUrl && (
             <Image src={subscriptionItem.product.imageUrl} alt={subscriptionItem.product.name} width={40} height={40} />
           )}
-          <span className="text-xl font-semibold leading-tight md:text-2xl">{subscriptionItem.product.name}</span>
+          <span className="text-lg font-semibold leading-tight md:text-2xl">{subscriptionItem.product.name}</span>
         </div>
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 md:gap-4">
           <div className="flex flex-wrap items-end gap-1">
-            <span className="text-2xl font-semibold leading-none md:text-3xl">{formattedPrice}</span>
+            <span className="text-xl font-semibold leading-none md:text-3xl">{formattedPrice}</span>
             <span className="text-sm font-medium leading-4 text-secondary">{frequency}</span>
           </div>
           <div>

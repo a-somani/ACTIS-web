@@ -21,10 +21,10 @@ export default function Header({
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-      <div className="mx-auto max-w-7xl px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8 md:py-4">
+        <div className="flex items-center gap-4 md:gap-8">
           <Link className="flex items-center" href="/">
-            <span className="text-xl font-semibold tracking-tight text-foreground">ACTIS</span>
+            <span className="text-lg font-semibold tracking-tight text-foreground md:text-xl">ACTIS</span>
           </Link>
           {showMarketingLinks ? (
             <div className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
@@ -37,7 +37,7 @@ export default function Header({
             </div>
           ) : null}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           {isAuthenticated ? (
             <Button variant="secondary" asChild>
               <Link href="/dashboard">Dashboard</Link>

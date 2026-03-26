@@ -47,7 +47,7 @@ export function AuthDialog({ open, mode, nextPath, onOpenChange, onModeChange }:
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="border-border bg-background/95 p-0 text-foreground shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
+        className="border-border bg-background p-0 text-foreground shadow-xl sm:max-w-[520px]"
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
         <DialogHeader className="px-6 pb-0 pt-6 text-left sm:text-left">

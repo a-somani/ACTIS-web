@@ -17,8 +17,8 @@ interface Props {
 
 function EmptyState() {
   return (
-    <div className="rounded-[24px] border border-white/10 bg-black/25 p-6 text-center">
-      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-black/40">
+    <div className="rounded-[24px] bg-white/[0.03] p-6 text-center">
+      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.05]">
         <Sparkles className="h-5 w-5 text-primary" />
       </div>
       <h2 className="mt-4 text-xl font-semibold">No generations yet</h2>
@@ -34,7 +34,7 @@ function EmptyState() {
 
 function HistoryCard({ record }: { record: CreateGenerationRecord }) {
   return (
-    <article className="overflow-hidden rounded-[28px] border border-white/10 bg-black/25">
+    <article className="overflow-hidden rounded-[24px] bg-white/[0.03]">
       <div className="grid gap-4 p-4 lg:grid-cols-[120px_minmax(0,1fr)_auto] lg:items-center">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
           <Image
@@ -46,7 +46,7 @@ function HistoryCard({ record }: { record: CreateGenerationRecord }) {
             width={320}
             height={320}
             unoptimized
-            className="aspect-square w-full rounded-[20px] border border-white/10 object-cover"
+            className="aspect-square w-full rounded-[18px] object-cover"
             loading="lazy"
           />
           <Image
@@ -58,7 +58,7 @@ function HistoryCard({ record }: { record: CreateGenerationRecord }) {
             width={320}
             height={320}
             unoptimized
-            className="aspect-square w-full rounded-[20px] border border-white/10 object-cover"
+            className="aspect-square w-full rounded-[18px] object-cover"
             loading="lazy"
           />
         </div>
@@ -68,22 +68,22 @@ function HistoryCard({ record }: { record: CreateGenerationRecord }) {
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary/80">ACTIS Create</p>
             <div className="mt-2 flex flex-wrap items-center gap-3">
               <h2 className="text-xl font-semibold">{record.source_file_name}</h2>
-              <span className="rounded-full border border-white/10 bg-black/40 px-2.5 py-1 text-[11px] uppercase tracking-[0.22em] text-white/55">
+              <span className="rounded-full bg-white/[0.06] px-2.5 py-1 text-[11px] uppercase tracking-[0.22em] text-white/55">
                 {record.status}
               </span>
             </div>
           </div>
 
           <div className="grid gap-3 text-sm text-white/70 sm:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-black/30 px-3 py-2">
+            <div className="px-1 py-1">
               <p className="text-[11px] uppercase tracking-[0.24em] text-white/40">Created</p>
               <p className="mt-1 font-medium text-white">{dayjs(record.created_at).format('MMM DD, YYYY [at] h:mma')}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-black/30 px-3 py-2">
+            <div className="px-1 py-1">
               <p className="text-[11px] uppercase tracking-[0.24em] text-white/40">Ratio</p>
               <p className="mt-1 font-medium text-white">{record.target_ratio}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-black/30 px-3 py-2">
+            <div className="px-1 py-1">
               <p className="text-[11px] uppercase tracking-[0.24em] text-white/40">Download</p>
               <p className="mt-1 font-medium text-white">{buildCreateGenerationDownloadName(record)}</p>
             </div>

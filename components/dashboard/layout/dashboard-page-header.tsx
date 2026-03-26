@@ -9,13 +9,13 @@ interface Props {
 export function DashboardPageHeader({ pageTitle, compact = false }: Props) {
   return (
     <div>
-      <div className={compact ? 'flex items-center gap-3' : 'flex items-center gap-6'}>
+      <div className={compact ? 'flex items-center gap-2.5 md:gap-3' : 'flex items-center gap-4 md:gap-6'}>
         <MobileSidebar />
-        <h1 className={compact ? 'text-base font-semibold md:text-2xl' : 'text-lg font-semibold md:text-4xl'}>
+        <h1 className={compact ? 'text-sm font-semibold md:text-2xl' : 'text-base font-semibold md:text-4xl'}>
           {pageTitle}
         </h1>
       </div>
-      <Separator className={compact ? 'relative my-4 bg-border dashboard-header-highlight' : 'relative bg-border my-8 dashboard-header-highlight'} />
+      <Separator className={compact ? 'relative my-3 bg-border dashboard-header-highlight md:my-4' : 'relative my-5 bg-border dashboard-header-highlight md:my-8'} />
     </div>
   );
 }

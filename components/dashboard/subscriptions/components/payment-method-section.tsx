@@ -20,9 +20,9 @@ export function PaymentMethodSection({ transactions, updatePaymentMethodUrl }: P
     return null;
   }
   return (
-    <div className={'flex gap-6 pt-6 items-end justify-between @16xs:flex-wrap'}>
-      <div className={'flex flex-col gap-4'}>
-        <div className={'text-base text-secondary leading-4 whitespace-nowrap'}>Payment method</div>
+    <div className={'flex items-end justify-between gap-4 pt-5 @16xs:flex-wrap md:gap-6 md:pt-6'}>
+      <div className={'flex flex-col gap-2.5 md:gap-4'}>
+        <div className={'whitespace-nowrap text-sm leading-4 text-secondary md:text-base'}>Payment method</div>
         <div className={'flex gap-1 items-end'}>
           <PaymentMethodDetails type={type} card={card} />
         </div>

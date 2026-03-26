@@ -14,7 +14,7 @@ export function SubscriptionNextPaymentCard({ subscription, transactions }: Prop
     return null;
   }
   return (
-    <Card className="border-border bg-background/50 p-4 backdrop-blur-[24px] @container md:p-5">
+    <Card className="border-0 bg-background/35 p-4 shadow-none @container md:p-5">
       <div className="flex flex-col gap-4 border-b border-border pb-4">
         <div className="text-lg font-medium">Next payment</div>
         <div className="flex flex-wrap items-end gap-1">

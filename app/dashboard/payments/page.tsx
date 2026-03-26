@@ -5,7 +5,7 @@ import { Suspense } from 'react';
 
 export default async function PaymentsPage() {
   return (
-    <main className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:gap-5 lg:p-8">
+    <main className="flex min-w-0 flex-1 flex-col gap-3 p-3 md:gap-4 md:p-4 lg:gap-5 lg:p-8">
       <DashboardPageHeader pageTitle={'Payments'} compact />
       <Suspense fallback={<LoadingScreen />}>
         <PaymentsContent subscriptionId={''} />

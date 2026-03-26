@@ -50,7 +50,7 @@ export function SubscriptionDetail({ subscriptionId, showHeader = true }: Props)
     return (
       <div className="space-y-4 md:space-y-5">
         {showHeader ? <DashboardPageHeader pageTitle={'Subscriptions'} compact /> : null}
-        <div className="rounded-[28px] border border-border bg-background/40 p-4 backdrop-blur-[24px] md:p-5">
+        <div className="rounded-[24px] bg-background/40 p-4 md:p-5">
           <SubscriptionHeader subscription={subscription.data} onCanceled={refetch} />
         </div>
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,320px)_minmax(0,1fr)] xl:gap-5">
