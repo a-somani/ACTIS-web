@@ -96,21 +96,21 @@ export function GeneratingState(props: {
 }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
-      <div className="rounded-[30px] border border-fuchsia-400/30 bg-black/30 p-4">
+      <div className="hidden rounded-[30px] border border-fuchsia-400/30 bg-black/30 p-4 lg:block">
         <img
           src={props.sourcePreviewUrl}
           alt="Source upload"
           className="aspect-square w-full rounded-[24px] object-cover opacity-65"
         />
         <p className="mt-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-fuchsia-300">
-          Materializing
+          Source
         </p>
       </div>
       <div className="rounded-[30px] border border-white/10 bg-black/25 p-5 text-center">
         <img
           src={props.sourcePreviewUrl}
           alt="Generating result"
-          className="mx-auto aspect-[4/5] w-full max-w-xs rounded-[28px] object-cover opacity-55"
+          className="mx-auto aspect-[4/5] w-full max-w-xs rounded-[28px] object-cover opacity-55 lg:max-w-sm"
         />
         <p className="mt-4 text-lg font-semibold text-fuchsia-300">{props.phaseMessage ?? 'Transforming your image'}</p>
         <p className="mt-2 text-sm text-white/60">

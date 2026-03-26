@@ -10,7 +10,7 @@ import {
   parseGeminiResponse,
   type ParsedResult,
 } from '@/utils/image-modifier-helpers';
-import { log } from '@/utils/logger';
+import { getErrorMessage, log } from '@/utils/logger';
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
   const backendPrompt = NANO_BANANA_BACKEND_PROMPT;
 
   if (!apiKey) {
-    return Response.json({ error: 'Nano Banana config is missing. Set NANO_BANANA_API_KEY.' }, { status: 500 });
+    return Response.json({ error: 'Image generation is not configured.' }, { status: 500 });
   }
 
   const formData = await request.formData();
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
           }
 
           advancePhase(8, 'Uploading image...');
-          advancePhase(20, 'Preparing Nano Banana request...');
+          advancePhase(20, 'Preparing your image...');
 
           heartbeat = setInterval(() => {
             const towardPhase = Math.max(0, phaseFloor - liveProgress);
@@ -157,7 +157,7 @@ export async function POST(request: Request) {
 
           let latestImage: ParsedResult | null = null;
           let chunkIndex = 0;
-          advancePhase(30, 'Generating with Nano Banana...');
+          advancePhase(30, 'Generating your result...');
 
           for await (const chunk of responseStream) {
             if (requestAborted) {
@@ -192,7 +192,7 @@ export async function POST(request: Request) {
               userId: user.id,
               chunks: chunkIndex,
             });
-            sendEvent('error', { message: 'Nano Banana did not return an image.' });
+            sendEvent('error', { message: 'No image was returned.' });
             controller.close();
             return;
           }
@@ -237,8 +237,8 @@ export async function POST(request: Request) {
             route: 'POST /api/image-modifier/stream',
             userId: user.id,
           });
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          sendEvent('error', { message: `Nano Banana request failed: ${errorMessage}` });
+          const errorMessage = getErrorMessage(error);
+          sendEvent('error', { message: `Image generation failed: ${errorMessage}` });
           controller.close();
         } finally {
           if (heartbeat) {
