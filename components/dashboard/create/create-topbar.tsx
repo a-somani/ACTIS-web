@@ -36,7 +36,6 @@ export function CreateTopbar({
           </div>
         ) : null}
         <div className="min-w-0">
-          <p className="text-[10px] uppercase tracking-[0.32em] text-primary/80 md:text-xs">ACTIS Create</p>
           <h1 className="text-sm font-semibold leading-tight md:text-2xl">Create with ACTIS</h1>
         </div>
       </div>

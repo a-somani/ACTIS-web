@@ -29,7 +29,11 @@ async function removeStoredAssets(paths: string[]) {
   }
 
   const supabase = createServiceClient();
-  await supabase.storage.from(CreateGenerationStorageBucket).remove(paths);
+  const { error } = await supabase.storage.from(CreateGenerationStorageBucket).remove(paths);
+
+  if (error) {
+    throw error;
+  }
 }
 
 export async function persistCreateGeneration(params: PersistCreateGenerationParams): Promise<string> {
@@ -95,7 +99,7 @@ export async function persistCreateGeneration(params: PersistCreateGenerationPar
 
     return String(data ?? generationId);
   } catch (error) {
-    await removeStoredAssets([sourceStoragePath, resultStoragePath]);
+    await removeStoredAssets([sourceStoragePath, resultStoragePath]).catch(() => undefined);
     throw error;
   }
 }
@@ -153,6 +157,23 @@ export async function markCreateGenerationUnavailable(userId: string, generation
     })
     .eq('id', generationId)
     .eq('user_id', userId);
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function deleteCreateGenerationForUser(userId: string, generationId: string) {
+  const supabase = createServiceClient();
+  const record = await getCreateGenerationForUser(userId, generationId);
+
+  if (!record) {
+    return;
+  }
+
+  await removeStoredAssets([record.source_storage_path, record.result_storage_path].filter(Boolean));
+
+  const { error } = await supabase.from('create_generations').delete().eq('id', generationId).eq('user_id', userId);
 
   if (error) {
     throw error;

@@ -15,13 +15,13 @@ export function MobileSidebar() {
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="flex flex-col">
+      <SheetContent side="left" className="flex flex-col px-3 pb-6 pt-12">
         <SheetTitle className="sr-only">Dashboard navigation</SheetTitle>
         <SheetDescription className="sr-only">
           Navigate between create, history, subscriptions, payments, and account settings.
         </SheetDescription>
-        <Sidebar />
-        <SidebarUserInfo />
+        <Sidebar className="mt-5 w-full px-0" itemClassName="w-full rounded-xl px-5" />
+        <SidebarUserInfo fullWidthLogout />
       </SheetContent>
     </Sheet>
   );

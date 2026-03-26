@@ -19,8 +19,8 @@ export function Footer({ user, onOpenLogin, onOpenSignup }: Props) {
         </div>
         <div className="flex items-center gap-6 text-sm text-muted-foreground">
           {user?.id ? (
-            <Link href="/dashboard" className="transition-colors hover:text-foreground">
-              Dashboard
+            <Link href="/dashboard/subscriptions" className="transition-colors hover:text-foreground">
+              Account
             </Link>
           ) : (
             <>

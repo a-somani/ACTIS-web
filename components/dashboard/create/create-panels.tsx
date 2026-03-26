@@ -3,7 +3,6 @@
 import { Download, ImagePlus, LoaderCircle, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { CreateShareMenu } from '@/components/dashboard/create/create-share-menu';
 import { CreateRatioOptions } from '@/components/dashboard/create/constants';
 
 export function EmptyUploadState(props: { isLoadingCredits: boolean; onUpload: () => void }) {
@@ -134,39 +133,32 @@ export function GeneratingState(props: {
 
 export function ResultState(props: {
   resultImage: string;
-  sourcePreviewUrl: string;
   onCompareChange: (value: boolean) => void;
   onDownload: () => void;
   onRegenerate: () => void;
   onCreateNew: () => void;
 }) {
   return (
-    <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
-      <img
-        src={props.sourcePreviewUrl}
-        alt="Original source"
-        className="aspect-square w-full rounded-[28px] object-cover"
-      />
-      <div className="space-y-4 rounded-[24px] bg-white/[0.03] p-5">
+    <div className="space-y-4 rounded-[24px] bg-white/[0.03] p-5">
+      <div className="mx-auto w-full max-w-sm">
         <button
           type="button"
           onPointerDown={() => props.onCompareChange(true)}
           onPointerUp={() => props.onCompareChange(false)}
           onPointerLeave={() => props.onCompareChange(false)}
-          className="relative mx-auto block w-full max-w-sm rounded-[28px]"
+          className="relative block w-full"
         >
           <img
             src={props.resultImage}
             alt="Generated result"
-            className="aspect-square w-full rounded-[28px] object-cover"
+            className="aspect-square w-full object-cover"
           />
           <span className="absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white/70">
             Hold to compare
           </span>
         </button>
-        <p className="text-center text-sm text-primary">Secure in ACTIS Vault</p>
-        <div className="flex flex-wrap gap-3">
-          <CreateShareMenu onDownload={props.onDownload} />
+      </div>
+      <div className="flex flex-wrap gap-3">
           <Button
             size="icon"
             className="h-12 w-12 rounded-2xl bg-primary/20 text-primary hover:bg-primary/30"
@@ -188,7 +180,6 @@ export function ResultState(props: {
           >
             Create new
           </Button>
-        </div>
       </div>
     </div>
   );

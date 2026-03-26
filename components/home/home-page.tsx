@@ -28,7 +28,7 @@ export function HomePage({ initialCredits = null, initialIsAuthenticated = false
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen overflow-hidden">
       <HomePageBackground />
       <Header
         user={user}

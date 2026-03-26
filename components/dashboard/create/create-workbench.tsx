@@ -107,68 +107,69 @@ export function CreateWorkbench({
           onActionClick={!isAuthenticated ? onRequireAuth : undefined}
         />
 
-        <div className="grid grid-cols-3 gap-2 rounded-[22px] bg-white/[0.04] p-2">
-          {CreateStepItems.map((step, index) => (
-            <div
-              key={step.id}
-              className="rounded-[18px] px-2 py-2 text-center"
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-primary/90">0{index + 1}</p>
-              <p className="mt-1 text-xs font-semibold text-white md:text-sm">{step.label}</p>
-            </div>
-          ))}
-        </div>
+        <div className="mx-auto flex w-full max-w-[760px] flex-col gap-4 xl:max-w-none">
+          <div className="mx-auto grid w-full max-w-[640px] grid-cols-3 gap-2 rounded-[22px] bg-white/[0.04] p-2">
+            {CreateStepItems.map((step, index) => (
+              <div
+                key={step.id}
+                className="rounded-[18px] px-2 py-2 text-center"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-primary/90">0{index + 1}</p>
+                <p className="mt-1 text-xs font-semibold text-white md:text-sm">{step.label}</p>
+              </div>
+            ))}
+          </div>
 
-        <div className="grid gap-4 xl:grid-cols-[220px_minmax(0,1fr)]">
-          <aside className="order-2 hidden space-y-3 xl:order-1 xl:block">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">Inventory</p>
-              {showDashboardChrome ? (
-                <Link href="/dashboard/history" className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
-                  View History
-                </Link>
-              ) : null}
-            </div>
-            <div className="grid grid-cols-3 gap-3 xl:grid-cols-1">
-              {history.length === 0 ? (
-                <div className="col-span-full rounded-[24px] bg-white/[0.04] p-4 text-sm text-white/50">
-                  Your recent generations appear here.
+          <div className="grid gap-4 xl:grid-cols-[220px_minmax(0,1fr)]">
+            <aside className="order-2 hidden space-y-3 xl:order-1 xl:block">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">Inventory</p>
+                {showDashboardChrome ? (
+                  <Link href="/dashboard/history" className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+                    View History
+                  </Link>
+                ) : null}
+              </div>
+              <div className="grid grid-cols-3 gap-3 xl:grid-cols-1">
+                {history.length === 0 ? (
+                  <div className="col-span-full rounded-[24px] bg-white/[0.04] p-4 text-sm text-white/50">
+                    Your recent generations appear here.
+                  </div>
+                ) : (
+                  history.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => restoreHistoryItem(item)}
+                      className="overflow-hidden rounded-[24px] bg-white/[0.04] p-1 transition-transform hover:-translate-y-0.5"
+                    >
+                      <img
+                        src={item.resultImage}
+                        alt={item.fileName}
+                        className="aspect-square w-full rounded-[20px] object-cover"
+                      />
+                    </button>
+                  ))
+                )}
+              </div>
+            </aside>
+
+            <div className="order-1 rounded-[28px] bg-[linear-gradient(180deg,rgba(25,28,39,0.96),rgba(11,13,18,0.98))] xl:order-2">
+              <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 md:px-5 md:py-4">
+                <div className="flex items-center gap-3">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <p className="text-base font-semibold md:text-lg">ACTIS Create</p>
                 </div>
-              ) : (
-                history.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => restoreHistoryItem(item)}
-                    className="overflow-hidden rounded-[24px] bg-white/[0.04] p-1 transition-transform hover:-translate-y-0.5"
-                  >
-                    <img
-                      src={item.resultImage}
-                      alt={item.fileName}
-                      className="aspect-square w-full rounded-[20px] object-cover"
-                    />
-                  </button>
-                ))
-              )}
-            </div>
-          </aside>
 
-          <div className="order-1 rounded-[28px] bg-[linear-gradient(180deg,rgba(25,28,39,0.96),rgba(11,13,18,0.98))] xl:order-2">
-            <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 md:px-5 md:py-4">
-              <div className="flex items-center gap-3">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <p className="text-base font-semibold md:text-lg">ACTIS Create</p>
+                <CreateBestPracticesDialog>
+                  <button type="button" className="inline-flex items-center gap-2 text-xs font-semibold text-white/70 md:text-sm">
+                    <span>TIPS</span>
+                    <HelpCircle className="h-4 w-4" />
+                  </button>
+                </CreateBestPracticesDialog>
               </div>
 
-              <CreateBestPracticesDialog>
-                <button type="button" className="inline-flex items-center gap-2 text-xs font-semibold text-white/70 md:text-sm">
-                  <span>TIPS</span>
-                  <HelpCircle className="h-4 w-4" />
-                </button>
-              </CreateBestPracticesDialog>
-            </div>
-
-            <div className="space-y-4 p-4 md:space-y-6 md:p-6">
+              <div className="space-y-4 p-4 md:space-y-6 md:p-6">
               {isSyncingBilling && (
                 <div className="rounded-2xl bg-primary/12 px-4 py-3 text-sm text-white/85">
                   Payment received. Syncing your credits and plan updates...
@@ -218,13 +219,13 @@ export function CreateWorkbench({
               {sourcePreviewUrl && resultImage && !isGenerating && (
                 <ResultState
                   resultImage={showOriginal ? sourcePreviewUrl : resultImage}
-                  sourcePreviewUrl={sourcePreviewUrl}
                   onCompareChange={setShowOriginal}
                   onDownload={() => downloadDataUrl(resultImage, 'actis-create-result')}
                   onRegenerate={() => void startGeneration()}
                   onCreateNew={clearForNextCreate}
                 />
               )}
+              </div>
             </div>
           </div>
         </div>

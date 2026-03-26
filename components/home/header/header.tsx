@@ -40,7 +40,7 @@ export default function Header({
         <div className="flex items-center gap-2 md:gap-3">
           {isAuthenticated ? (
             <Button variant="secondary" asChild>
-              <Link href="/dashboard">Dashboard</Link>
+              <Link href="/dashboard/subscriptions">Account</Link>
             </Button>
           ) : (
             <>
