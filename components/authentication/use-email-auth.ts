@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { signInWithGoogle } from '@/app/login/actions';
 import type { AuthDialogCopy, AuthDialogMode, AuthLookupResult, AuthStep } from '@/components/authentication/types';
 import {
@@ -23,7 +22,6 @@ export function useEmailAuth({
   isOpen = true,
   onAuthSuccess,
 }: UseEmailAuthOptions) {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [lookup, setLookup] = useState<AuthLookupResult | null>(null);
@@ -79,8 +77,7 @@ export function useEmailAuth({
 
   async function completeAuth() {
     onAuthSuccess?.();
-    router.push(nextPath);
-    router.refresh();
+    window.location.assign(nextPath);
   }
 
   function resetFlow(keepEmail = true) {
@@ -147,18 +144,20 @@ export function useEmailAuth({
     }
   }
 
-  async function handleVerifyCode() {
+  async function handleVerifyCode(codeOverride?: string) {
     setError(null);
     setMessage(null);
+    const submittedCode = (codeOverride ?? code).trim();
 
-    if (!code.trim()) {
+    if (!submittedCode) {
       setError('Enter the code from your email to continue.');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await verifyEmailOtpClient(email, code);
+      setCode(submittedCode);
+      await verifyEmailOtpClient(email, submittedCode);
       await completeAuth();
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Unable to verify this code.');

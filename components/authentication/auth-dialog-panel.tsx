@@ -1,6 +1,7 @@
 'use client';
 
 import type { AuthDialogCopy, AuthLookupResult, AuthStep, AuthSwitchCopy } from '@/components/authentication/types';
+import { OtpCodeInput } from '@/components/authentication/otp-code-input';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,7 +22,7 @@ interface Props {
   onContinue: () => void;
   onGoogle: () => void;
   onRequestCode: (status: AuthLookupResult['status']) => void;
-  onVerifyCode: () => void;
+  onVerifyCode: (code?: string) => void;
   onReset: () => void;
   onToggleMode: () => void;
 }
@@ -67,17 +68,7 @@ export function AuthDialogPanel({
           <Label className="text-muted-foreground leading-5" htmlFor="auth-code">
             One-time code
           </Label>
-          <Input
-            className="border-border rounded-xs"
-            type="text"
-            id="auth-code"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            value={code}
-            onChange={(event) => onCodeChange(event.target.value)}
-            placeholder="123456"
-            disabled={isSubmitting}
-          />
+          <OtpCodeInput value={code} onChange={onCodeChange} onComplete={onVerifyCode} disabled={isSubmitting} />
         </div>
       ) : null}
 
@@ -135,7 +126,13 @@ export function AuthDialogPanel({
 
       {step === 'otp' ? (
         <>
-          <Button type="button" variant="secondary" className="w-full" onClick={onVerifyCode} disabled={isSubmitting}>
+          <Button
+            type="button"
+            variant="secondary"
+            className="w-full"
+            onClick={() => onVerifyCode()}
+            disabled={isSubmitting}
+          >
             {isSubmitting ? 'Verifying...' : 'Continue'}
           </Button>
           <Button
