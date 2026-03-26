@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { Coins, Sparkles } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { CreditSummaryResponse } from '@/components/dashboard/create/types';
 
 export function CreditsSummaryCard({ summary }: { summary: CreditSummaryResponse | null }) {
@@ -9,32 +8,29 @@ export function CreditsSummaryCard({ summary }: { summary: CreditSummaryResponse
   const tierName = summary?.activeTierName ?? 'No active plan';
 
   return (
-    <Card className="border-border bg-background/50 p-4 backdrop-blur-[24px] md:p-5">
-      <CardHeader className="space-y-1 p-0">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Credits</p>
-        <CardTitle className="text-xl font-semibold md:text-2xl">Usage snapshot</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-3 p-0 pt-4 md:grid-cols-3">
+    <section className="space-y-2">
+      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Credits</p>
+      <div className="grid gap-1.5 rounded-2xl border border-border bg-background p-3 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,1fr)] md:gap-0 md:p-4">
         <SummaryItem
           icon={<Coins className="h-4 w-4" />}
-          label="Available now"
-          value={balance.toString()}
-          description="Current balance ready to spend."
+          label="Balance"
+          value={`${balance} Credits`}
+          emphasized
         />
         <SummaryItem
           icon={<Sparkles className="h-4 w-4" />}
-          label="Per generation"
-          value={`${generationCost} credits`}
-          description="Standard ACTIS Create cost."
+          label="Image cost"
+          value={`${generationCost} Credits`}
+          showDivider
         />
         <SummaryItem
           icon={<Sparkles className="h-4 w-4" />}
           label="Plan"
           value={tierName}
-          description="Monthly credits come from your active plan."
+          showDivider
         />
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -42,21 +38,26 @@ function SummaryItem({
   icon,
   label,
   value,
-  description,
+  emphasized = false,
+  showDivider = false,
 }: {
   icon: ReactNode;
   label: string;
   value: string;
-  description: string;
+  emphasized?: boolean;
+  showDivider?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-border/70 bg-background/70 p-3.5 md:p-4">
-      <div className="mb-2 flex items-center gap-2 text-primary">
+    <div
+      className={`rounded-xl px-2 py-2.5 md:rounded-none md:px-4 md:py-2 ${showDivider ? 'md:border-l md:border-border/60' : 'md:pl-0'}`}
+    >
+      <div className="mb-1 flex items-center gap-2 text-primary">
         {icon}
         <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">{label}</span>
       </div>
-      <p className="text-xl font-semibold md:text-2xl">{value}</p>
-      <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>
+      <p className={emphasized ? 'text-2xl font-semibold leading-tight md:text-3xl' : 'text-base font-medium leading-tight md:text-lg'}>
+        {value}
+      </p>
     </div>
   );
 }

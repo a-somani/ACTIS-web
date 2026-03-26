@@ -4,12 +4,13 @@ import { Subscription } from '@paddle/paddle-node-sdk';
 
 interface Props {
   subscriptions: Subscription[];
+  showHeader?: boolean;
 }
 
-export function MultipleSubscriptionsView({ subscriptions }: Props) {
+export function MultipleSubscriptionsView({ subscriptions, showHeader = true }: Props) {
   return (
     <>
-      <DashboardPageHeader pageTitle={'Subscriptions'} compact />
+      {showHeader ? <DashboardPageHeader pageTitle={'Subscriptions'} compact /> : null}
       <SubscriptionCards className={'grid-cols-1 gap-4 lg:grid-cols-3'} subscriptions={subscriptions} />
     </>
   );

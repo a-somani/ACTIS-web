@@ -7,6 +7,7 @@ import { getSubscriptions } from '@/utils/paddle/get-subscriptions';
 import { syncCreditsForUser } from '@/utils/credits-server';
 import { createClient } from '@/utils/supabase/server';
 import { CreditsSummaryCard } from '@/components/dashboard/subscriptions/components/credits-summary-card';
+import { DashboardPageHeader } from '@/components/dashboard/layout/dashboard-page-header';
 
 export async function Subscriptions() {
   const supabase = await createClient();
@@ -19,25 +20,28 @@ export async function Subscriptions() {
   if (subscriptions) {
     if (subscriptions.length === 0) {
       return (
-        <div className="space-y-6">
+        <div className="space-y-5">
+          <DashboardPageHeader pageTitle={'Subscriptions'} compact />
           <CreditsSummaryCard summary={creditSummary} />
-          <NoSubscriptionView />
+          <NoSubscriptionView showHeader={false} />
           <CreditPackCards />
         </div>
       );
     } else if (subscriptions.length === 1) {
       return (
-        <div className="space-y-6">
+        <div className="space-y-5">
+          <DashboardPageHeader pageTitle={'Subscriptions'} compact />
           <CreditsSummaryCard summary={creditSummary} />
-          <SubscriptionDetail subscriptionId={subscriptions[0].id} />
+          <SubscriptionDetail subscriptionId={subscriptions[0].id} showHeader={false} />
           <CreditPackCards />
         </div>
       );
     } else {
       return (
-        <div className="space-y-6">
+        <div className="space-y-5">
+          <DashboardPageHeader pageTitle={'Subscriptions'} compact />
           <CreditsSummaryCard summary={creditSummary} />
-          <MultipleSubscriptionsView subscriptions={subscriptions} />
+          <MultipleSubscriptionsView subscriptions={subscriptions} showHeader={false} />
           <CreditPackCards />
         </div>
       );

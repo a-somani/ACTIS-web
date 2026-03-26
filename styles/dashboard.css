@@ -97,11 +97,3 @@
   background: linear-gradient(90deg, transparent 15%, rgba(45, 212, 191, 0.5) 50%, transparent 85%);
 }
 
-.dashboard-header-highlight::after {
-  content: '';
-  width: 248px;
-  height: 1px;
-  position: absolute;
-  left: 8px;
-  background: linear-gradient(90deg, transparent 15%, rgba(45, 212, 191, 0.5) 50%, transparent 85%);
-}

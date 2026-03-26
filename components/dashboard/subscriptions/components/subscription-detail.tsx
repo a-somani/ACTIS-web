@@ -14,9 +14,10 @@ import { SubscriptionDetailResponse, TransactionResponse } from '@/lib/api.types
 
 interface Props {
   subscriptionId: string;
+  showHeader?: boolean;
 }
 
-export function SubscriptionDetail({ subscriptionId }: Props) {
+export function SubscriptionDetail({ subscriptionId, showHeader = true }: Props) {
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionDetailResponse>();
   const [transactions, setTransactions] = useState<TransactionResponse>();
@@ -48,7 +49,7 @@ export function SubscriptionDetail({ subscriptionId }: Props) {
   } else if (subscription?.data && transactions?.data) {
     return (
       <div className="space-y-4 md:space-y-5">
-        <DashboardPageHeader pageTitle={'Subscriptions'} compact />
+        {showHeader ? <DashboardPageHeader pageTitle={'Subscriptions'} compact /> : null}
         <div className="rounded-[28px] border border-border bg-background/40 p-4 backdrop-blur-[24px] md:p-5">
           <SubscriptionHeader subscription={subscription.data} onCanceled={refetch} />
         </div>
