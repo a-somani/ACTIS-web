@@ -5,10 +5,10 @@ import { useDropzone } from 'react-dropzone';
 import { Download, ImagePlus, Plus, Sparkles, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { DEFAULT_EXPAND_RATIO, IMAGE_EXPAND_RATIO_OPTIONS } from '@/utils/constants';
-import { RatioSelect } from '@/components/dashboard/image-modifier/ratio-select';
-import { useImageModifierBatch } from '@/components/dashboard/image-modifier/use-image-modifier-batch';
-import { BatchImageItemCard } from '@/components/dashboard/image-modifier/batch-image-item-card';
+import { DEFAULT_UPSCALE_FACTOR, IMAGE_UPSCALE_FACTOR_OPTIONS } from '@/utils/constants';
+import { ScaleSelect } from '@/components/dashboard/image-upscaler/scale-select';
+import { useImageUpscalerBatch } from '@/components/dashboard/image-upscaler/use-image-upscaler-batch';
+import { UpscaleItemCard } from '@/components/dashboard/image-upscaler/upscale-item-card';
 
 function downloadDataUrl(dataUrl: string, filename: string) {
   const extension = dataUrl.startsWith('data:image/jpeg') ? 'jpg' : 'png';
@@ -22,9 +22,9 @@ function downloadDataUrl(dataUrl: string, filename: string) {
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-export function ImageModifierWorkbench() {
-  const hasInitializedRatioRef = useRef(false);
-  const [targetRatio, setTargetRatio] = useState(DEFAULT_EXPAND_RATIO);
+export function ImageUpscalerWorkbench() {
+  const hasInitializedScaleRef = useRef(false);
+  const [scaleFactor, setScaleFactor] = useState(DEFAULT_UPSCALE_FACTOR);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const {
     items,
@@ -34,19 +34,19 @@ export function ImageModifierWorkbench() {
     clearAll,
     generateItem,
     generateAll,
-    resetOutputsForRatioChange,
-  } = useImageModifierBatch();
+    resetOutputsForScaleChange,
+  } = useImageUpscalerBatch();
 
-  const ratioOptions = useMemo(() => IMAGE_EXPAND_RATIO_OPTIONS.map((option) => ({ ...option })), []);
+  const scaleOptions = useMemo(() => IMAGE_UPSCALE_FACTOR_OPTIONS.map((option) => ({ ...option })), []);
 
   useEffect(() => {
-    if (!hasInitializedRatioRef.current) {
-      hasInitializedRatioRef.current = true;
+    if (!hasInitializedScaleRef.current) {
+      hasInitializedScaleRef.current = true;
       return;
     }
-    resetOutputsForRatioChange();
+    resetOutputsForScaleChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetRatio]);
+  }, [scaleFactor]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: { file: File }[]) => {
@@ -73,7 +73,7 @@ export function ImageModifierWorkbench() {
     completed.forEach((item, index) => {
       if (!item.resultImage) return;
       window.setTimeout(() => {
-        downloadDataUrl(item.resultImage!, `image-expand-${targetRatio.replace(':', 'x')}-${index + 1}`);
+        downloadDataUrl(item.resultImage!, `image-upscale-${scaleFactor}-${index + 1}`);
       }, index * 200);
     });
   };
@@ -95,18 +95,18 @@ export function ImageModifierWorkbench() {
 
       {hasItems && (
         <>
-          <RatioSelect
-            value={targetRatio}
-            options={ratioOptions}
+          <ScaleSelect
+            value={scaleFactor}
+            options={scaleOptions}
             disabled={isGeneratingAll}
-            onChange={setTargetRatio}
+            onChange={setScaleFactor}
           />
 
           <Toolbar
             itemCount={items.length}
             completedCount={completedCount}
             isGeneratingAll={isGeneratingAll}
-            onGenerateAll={() => generateAll(targetRatio)}
+            onGenerateAll={() => generateAll(scaleFactor)}
             onDownloadAll={handleDownloadAll}
             onClearAll={clearAll}
             onAddMore={open}
@@ -114,16 +114,16 @@ export function ImageModifierWorkbench() {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item, index) => (
-              <BatchImageItemCard
+              <UpscaleItemCard
                 key={item.id}
                 item={item}
-                targetRatio={targetRatio}
+                scaleFactor={scaleFactor}
                 disableActions={isGeneratingAll}
-                onGenerate={() => generateItem(item.id, targetRatio)}
+                onGenerate={() => generateItem(item.id, scaleFactor)}
                 onRemove={() => removeItem(item.id)}
                 onDownload={() => {
                   if (!item.resultImage) return;
-                  downloadDataUrl(item.resultImage, `image-expand-${targetRatio.replace(':', 'x')}-${index + 1}`);
+                  downloadDataUrl(item.resultImage, `image-upscale-${scaleFactor}-${index + 1}`);
                 }}
               />
             ))}
@@ -153,7 +153,7 @@ function HeroDropZone({ getRootProps, getInputProps, isDragActive }: HeroDropZon
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
         <ImagePlus className="h-7 w-7 text-muted-foreground" />
       </div>
-      <p className="mt-4 text-base font-medium">Drop images here to get started</p>
+      <p className="mt-4 text-base font-medium">Drop images to upscale</p>
       <p className="mt-1 text-sm text-muted-foreground">or click to browse from your device</p>
       <p className="mt-3 text-xs text-muted-foreground">PNG, JPG, WebP up to 10 MB each</p>
     </div>
@@ -189,7 +189,7 @@ function Toolbar({
         disabled={isGeneratingAll || itemCount === 0}
       >
         <Sparkles className="h-3.5 w-3.5" />
-        {isGeneratingAll ? 'Generating...' : 'Generate all'}
+        {isGeneratingAll ? 'Upscaling...' : 'Upscale all'}
       </Button>
 
       <Button

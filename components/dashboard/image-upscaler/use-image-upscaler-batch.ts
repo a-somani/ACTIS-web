@@ -1,32 +1,31 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { formatAspectRatio } from '@/components/dashboard/image-modifier/ratio-utils';
-import type { OriginalImageMeta } from '@/components/dashboard/image-modifier/types';
-import { generateImageRequest } from '@/components/dashboard/image-modifier/generate-image-request';
+import type { UpscalerOriginalImageMeta } from '@/components/dashboard/image-upscaler/types';
+import { upscaleImageRequest } from '@/components/dashboard/image-upscaler/upscale-image-request';
 
-export type BatchImageStatus = 'ready' | 'generating' | 'done' | 'error';
+export type UpscalerBatchImageStatus = 'ready' | 'generating' | 'done' | 'error';
 
-export interface BatchImageItem {
+export interface UpscalerBatchImageItem {
   id: string;
   file: File;
   previewUrl: string;
-  originalImageMeta: OriginalImageMeta | null;
-  status: BatchImageStatus;
+  originalImageMeta: UpscalerOriginalImageMeta | null;
+  status: UpscalerBatchImageStatus;
   progress: number | null;
   resultImage: string | null;
   error: string | null;
 }
 
-interface UseImageModifierBatchResult {
-  items: BatchImageItem[];
+interface UseImageUpscalerBatchResult {
+  items: UpscalerBatchImageItem[];
   isGeneratingAll: boolean;
   addFiles: (files: File[]) => void;
   removeItem: (itemId: string) => void;
   clearAll: () => void;
-  generateItem: (itemId: string, targetRatio: string) => Promise<void>;
-  generateAll: (targetRatio: string) => Promise<void>;
-  resetOutputsForRatioChange: () => void;
+  generateItem: (itemId: string, scaleFactor: string) => Promise<void>;
+  generateAll: (scaleFactor: string) => Promise<void>;
+  resetOutputsForScaleChange: () => void;
 }
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
@@ -39,7 +38,7 @@ function createItemId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function loadImageMeta(previewUrl: string): Promise<OriginalImageMeta | null> {
+function loadImageMeta(previewUrl: string): Promise<UpscalerOriginalImageMeta | null> {
   return new Promise((resolve) => {
     const image = new Image();
 
@@ -52,11 +51,7 @@ function loadImageMeta(previewUrl: string): Promise<OriginalImageMeta | null> {
         return;
       }
 
-      resolve({
-        width,
-        height,
-        ratioLabel: formatAspectRatio(width, height),
-      });
+      resolve({ width, height });
     };
 
     image.onerror = () => resolve(null);
@@ -68,10 +63,10 @@ function canUseFile(file: File): boolean {
   return file.type.startsWith('image/') && file.size <= MAX_IMAGE_BYTES;
 }
 
-export function useImageModifierBatch(): UseImageModifierBatchResult {
-  const [items, setItems] = useState<BatchImageItem[]>([]);
+export function useImageUpscalerBatch(): UseImageUpscalerBatchResult {
+  const [items, setItems] = useState<UpscalerBatchImageItem[]>([]);
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
-  const itemsRef = useRef<BatchImageItem[]>(items);
+  const itemsRef = useRef<UpscalerBatchImageItem[]>(items);
 
   useEffect(() => {
     itemsRef.current = items;
@@ -91,7 +86,7 @@ export function useImageModifierBatch(): UseImageModifierBatchResult {
       return;
     }
 
-    const nextItems: BatchImageItem[] = validFiles.map((file) => {
+    const nextItems: UpscalerBatchImageItem[] = validFiles.map((file) => {
       const previewUrl = URL.createObjectURL(file);
       return {
         id: createItemId(),
@@ -138,7 +133,7 @@ export function useImageModifierBatch(): UseImageModifierBatchResult {
     });
   };
 
-  const generateSingleItem = async (itemId: string, targetRatio: string) => {
+  const upscaleSingleItem = async (itemId: string, scaleFactor: string) => {
     const item = itemsRef.current.find((candidate) => candidate.id === itemId);
     if (!item || item.status === 'generating') {
       return;
@@ -158,9 +153,9 @@ export function useImageModifierBatch(): UseImageModifierBatchResult {
     );
 
     try {
-      const { resultImage } = await generateImageRequest({
+      const { resultImage } = await upscaleImageRequest({
         file: item.file,
-        targetRatio,
+        scaleFactor,
         originalImageMeta: item.originalImageMeta,
         onProgress: (progress) => {
           setItems((previous) =>
@@ -190,7 +185,7 @@ export function useImageModifierBatch(): UseImageModifierBatchResult {
         ),
       );
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Generation failed.';
+      const message = error instanceof Error ? error.message : 'Upscale failed.';
 
       setItems((previous) =>
         previous.map((candidate) =>
@@ -207,11 +202,11 @@ export function useImageModifierBatch(): UseImageModifierBatchResult {
     }
   };
 
-  const generateItem = async (itemId: string, targetRatio: string) => {
-    await generateSingleItem(itemId, targetRatio);
+  const generateItem = async (itemId: string, scaleFactor: string) => {
+    await upscaleSingleItem(itemId, scaleFactor);
   };
 
-  const generateAll = async (targetRatio: string) => {
+  const generateAll = async (scaleFactor: string) => {
     const queue = itemsRef.current.filter((item) => item.status !== 'generating');
     if (!queue.length) {
       return;
@@ -221,14 +216,14 @@ export function useImageModifierBatch(): UseImageModifierBatchResult {
 
     try {
       for (const item of queue) {
-        await generateSingleItem(item.id, targetRatio);
+        await upscaleSingleItem(item.id, scaleFactor);
       }
     } finally {
       setIsGeneratingAll(false);
     }
   };
 
-  const resetOutputsForRatioChange = () => {
+  const resetOutputsForScaleChange = () => {
     setItems((previous) =>
       previous.map((item) => ({
         ...item,
@@ -248,6 +243,6 @@ export function useImageModifierBatch(): UseImageModifierBatchResult {
     clearAll,
     generateItem,
     generateAll,
-    resetOutputsForRatioChange,
+    resetOutputsForScaleChange,
   };
 }

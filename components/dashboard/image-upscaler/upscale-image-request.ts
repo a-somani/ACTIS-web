@@ -1,24 +1,26 @@
 import type {
-  ImageModifierResponse,
-  OriginalImageMeta,
-  StreamEventPayload,
-} from '@/components/dashboard/image-modifier/types';
+  UpscalerOriginalImageMeta,
+  UpscalerResponse,
+  UpscalerStreamEventPayload,
+} from '@/components/dashboard/image-upscaler/types';
 import { compressForUpload } from '@/utils/compress-image';
 
-interface GenerateImageRequestParams {
+interface UpscaleImageRequestParams {
   file: File;
-  targetRatio: string;
-  originalImageMeta: OriginalImageMeta | null;
+  scaleFactor: string;
+  originalImageMeta: UpscalerOriginalImageMeta | null;
   onProgress?: (progress: number) => void;
   onStatusMessage?: (message: string) => void;
   signal?: AbortSignal;
 }
 
-interface GenerateImageRequestResult {
+interface UpscaleImageRequestResult {
   resultImage: string;
 }
 
-function toDataUrl(payload: Pick<StreamEventPayload, 'imageBase64' | 'imageUrl' | 'mimeType'>): string | null {
+function toDataUrl(
+  payload: Pick<UpscalerStreamEventPayload, 'imageBase64' | 'imageUrl' | 'mimeType'>,
+): string | null {
   if (payload.imageUrl) {
     return payload.imageUrl;
   }
@@ -31,27 +33,25 @@ function toDataUrl(payload: Pick<StreamEventPayload, 'imageBase64' | 'imageUrl' 
   return null;
 }
 
-export async function generateImageRequest({
+export async function upscaleImageRequest({
   file,
-  targetRatio,
+  scaleFactor,
   originalImageMeta,
   onProgress,
   onStatusMessage,
   signal,
-}: GenerateImageRequestParams): Promise<GenerateImageRequestResult> {
+}: UpscaleImageRequestParams): Promise<UpscaleImageRequestResult> {
   const uploadFile = await compressForUpload(file);
   const payload = new FormData();
   payload.append('image', uploadFile);
-  payload.append('targetRatio', targetRatio);
+  payload.append('scaleFactor', scaleFactor);
 
-  const shouldSendSourceMeta = Boolean(originalImageMeta && originalImageMeta.ratioLabel !== targetRatio);
-  if (shouldSendSourceMeta && originalImageMeta) {
+  if (originalImageMeta) {
     payload.append('sourceWidth', originalImageMeta.width.toString());
     payload.append('sourceHeight', originalImageMeta.height.toString());
-    payload.append('sourceRatio', originalImageMeta.ratioLabel);
   }
 
-  const response = await fetch('/api/image-modifier/stream', {
+  const response = await fetch('/api/image-upscaler/stream', {
     method: 'POST',
     body: payload,
     signal,
@@ -60,9 +60,9 @@ export async function generateImageRequest({
   const contentType = response.headers.get('content-type') ?? '';
   if (!response.ok || !contentType.includes('text/event-stream')) {
     const text = await response.text();
-    let errorMessage = `Image generation failed (${response.status}).`;
+    let errorMessage = `Image upscale failed (${response.status}).`;
     try {
-      const data = JSON.parse(text) as ImageModifierResponse;
+      const data = JSON.parse(text) as UpscalerResponse;
       errorMessage = data.error ?? errorMessage;
     } catch {
       if (text.length > 0 && text.length < 200) {
@@ -80,14 +80,13 @@ export async function generateImageRequest({
   const decoder = new TextDecoder();
   let buffer = '';
   let resultImage: string | null = null;
-
   let serverError: string | null = null;
 
   const handleSseEvent = (eventType: string, eventData: string) => {
-    let parsedData: StreamEventPayload = {};
+    let parsedData: UpscalerStreamEventPayload = {};
 
     try {
-      parsedData = JSON.parse(eventData) as StreamEventPayload;
+      parsedData = JSON.parse(eventData) as UpscalerStreamEventPayload;
     } catch {
       parsedData = {};
     }
@@ -111,7 +110,7 @@ export async function generateImageRequest({
     }
 
     if (eventType === 'error') {
-      serverError = parsedData.message ?? 'Generation failed.';
+      serverError = parsedData.message ?? 'Upscale failed.';
       return;
     }
 
@@ -147,7 +146,7 @@ export async function generateImageRequest({
     }
   } catch (streamError) {
     if (!resultImage) {
-      const msg = streamError instanceof Error ? streamError.message : 'Connection lost during generation.';
+      const msg = streamError instanceof Error ? streamError.message : 'Connection lost during upscale.';
       throw new Error(msg);
     }
   }
@@ -157,7 +156,7 @@ export async function generateImageRequest({
   }
 
   if (!resultImage) {
-    throw new Error('No generated image was returned.');
+    throw new Error('No upscaled image was returned.');
   }
 
   return { resultImage };

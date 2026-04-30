@@ -1,11 +1,11 @@
-export interface ImageModifierResponse {
+export interface UpscalerResponse {
   error?: string;
   imageUrl?: string;
   imageBase64?: string;
   mimeType?: string;
 }
 
-export interface StreamEventPayload {
+export interface UpscalerStreamEventPayload {
   message?: string;
   imageUrl?: string;
   imageBase64?: string;
@@ -13,8 +13,7 @@ export interface StreamEventPayload {
   progress?: number;
 }
 
-export interface OriginalImageMeta {
+export interface UpscalerOriginalImageMeta {
   width: number;
   height: number;
-  ratioLabel: string;
 }

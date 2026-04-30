@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseGeminiResponse, createSseEvent, getChunkSignals } from '@/utils/image-modifier-helpers';
+import { parseGeminiResponse, createSseEvent, getChunkSignals } from '@/utils/sse-helpers';
 
 describe('parseGeminiResponse', () => {
   it('returns empty for null/undefined/non-object', () => {

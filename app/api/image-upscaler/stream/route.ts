@@ -3,13 +3,13 @@ import { CreateGenerationCreditCost } from '@/utils/credits';
 import { syncCreditsForUser } from '@/utils/credits-server';
 import { persistCreateGeneration } from '@/utils/create-generations-server';
 import { createClient } from '@/utils/supabase/server';
-import { NANO_BANANA_BACKEND_PROMPT, createNanoBananaExpandPrompt, resolveExpandRatio } from '@/utils/constants';
+import { NANO_BANANA_BACKEND_PROMPT, createNanoBananaUpscalePrompt, resolveUpscaleFactor } from '@/utils/constants';
 import {
   createSseEvent,
   getChunkSignals,
   parseGeminiResponse,
   type ParsedResult,
-} from '@/utils/image-modifier-helpers';
+} from '@/utils/sse-helpers';
 import { getErrorMessage, log } from '@/utils/logger';
 
 export async function POST(request: Request) {
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   if (creditSummary.balance < CreateGenerationCreditCost) {
     return Response.json(
       {
-        error: `You need ${CreateGenerationCreditCost} credits to generate. Visit subscriptions to get more credits.`,
+        error: `You need ${CreateGenerationCreditCost} credits to upscale. Visit subscriptions to get more credits.`,
       },
       { status: 402 },
     );
@@ -42,23 +42,17 @@ export async function POST(request: Request) {
 
   const formData = await request.formData();
   const image = formData.get('image');
-  const targetRatio = resolveExpandRatio(formData.get('targetRatio')?.toString() ?? null);
-  const sourceRatio = formData.get('sourceRatio')?.toString();
+  const scaleFactor = resolveUpscaleFactor(formData.get('scaleFactor')?.toString() ?? null);
   const sourceWidth = Number(formData.get('sourceWidth')?.toString() ?? '');
   const sourceHeight = Number(formData.get('sourceHeight')?.toString() ?? '');
-  const userPrompt = createNanoBananaExpandPrompt({
-    targetRatio,
-    sourceRatio: sourceRatio || undefined,
+  const userPrompt = createNanoBananaUpscalePrompt({
+    scaleFactor,
     sourceWidth: Number.isFinite(sourceWidth) && sourceWidth > 0 ? sourceWidth : undefined,
     sourceHeight: Number.isFinite(sourceHeight) && sourceHeight > 0 ? sourceHeight : undefined,
   });
 
   if (!(image instanceof File)) {
     return Response.json({ error: 'Image is required.' }, { status: 400 });
-  }
-
-  if (sourceRatio && sourceRatio === targetRatio) {
-    return Response.json({ error: 'Output ratio must be different from source ratio.' }, { status: 400 });
   }
 
   if (!image.type.startsWith('image/')) {
@@ -75,11 +69,10 @@ export async function POST(request: Request) {
   const ai = new GoogleGenAI({ apiKey });
   const encoder = new TextEncoder();
 
-  log.info('Image expand stream started', {
-    route: 'POST /api/image-modifier/stream',
+  log.info('Image upscale stream started', {
+    route: 'POST /api/image-upscaler/stream',
     userId: user.id,
-    targetRatio,
-    sourceRatio,
+    scaleFactor,
     fileSize: image.size,
     mimeType: image.type,
   });
@@ -126,14 +119,13 @@ export async function POST(request: Request) {
           }
 
           advancePhase(8, 'Uploading image...');
-          advancePhase(20, 'Preparing your image...');
+          advancePhase(20, 'Analyzing detail...');
 
           heartbeat = setInterval(() => {
             const towardPhase = Math.max(0, phaseFloor - liveProgress);
             if (towardPhase > 0) {
               liveProgress += Math.min(2.6, towardPhase * 0.45 + 0.6);
             } else if (liveProgress < 97) {
-              // Human-perceived smoothness while waiting between backend updates.
               liveProgress += liveProgress < 90 ? 0.35 : 0.12;
             }
             sendProgress(liveProgress);
@@ -157,7 +149,7 @@ export async function POST(request: Request) {
 
           let latestImage: ParsedResult | null = null;
           let chunkIndex = 0;
-          advancePhase(30, 'Generating your result...');
+          advancePhase(30, 'Upscaling your image...');
 
           for await (const chunk of responseStream) {
             if (requestAborted) {
@@ -187,8 +179,8 @@ export async function POST(request: Request) {
           }
 
           if (!latestImage?.imageBase64) {
-            log.warn('Gemini stream returned no image', {
-              route: 'POST /api/image-modifier/stream',
+            log.warn('Gemini upscale stream returned no image', {
+              route: 'POST /api/image-upscaler/stream',
               userId: user.id,
               chunks: chunkIndex,
             });
@@ -203,12 +195,14 @@ export async function POST(request: Request) {
           }
 
           const resultBytes = Buffer.from(latestImage.imageBase64, 'base64');
+          // Persisted alongside expand generations; `target_ratio` column carries the upscale factor
+          // prefixed with `upscale-` so history can distinguish kinds without a schema change.
           const generationId = await persistCreateGeneration({
             userId: user.id,
-            sourceFileName: image.name || 'actis-source',
+            sourceFileName: image.name || 'actis-upscale-source',
             sourceMimeType: image.type,
             sourceBytes,
-            targetRatio,
+            targetRatio: `upscale-${scaleFactor}`,
             resultMimeType: latestImage.mimeType ?? 'image/png',
             resultBytes,
           });
@@ -220,10 +214,10 @@ export async function POST(request: Request) {
             generationId,
           });
           sendEvent('done', { message: 'Completed.', progress: 100 });
-          log.info('Image expand stream completed', {
-            route: 'POST /api/image-modifier/stream',
+          log.info('Image upscale stream completed', {
+            route: 'POST /api/image-upscaler/stream',
             userId: user.id,
-            targetRatio,
+            scaleFactor,
             chunks: chunkIndex,
           });
           controller.close();
@@ -233,12 +227,12 @@ export async function POST(request: Request) {
             return;
           }
 
-          log.error('Image expand stream failed', error, {
-            route: 'POST /api/image-modifier/stream',
+          log.error('Image upscale stream failed', error, {
+            route: 'POST /api/image-upscaler/stream',
             userId: user.id,
           });
           const errorMessage = getErrorMessage(error);
-          sendEvent('error', { message: `Image generation failed: ${errorMessage}` });
+          sendEvent('error', { message: `Image upscale failed: ${errorMessage}` });
           controller.close();
         } finally {
           if (heartbeat) {

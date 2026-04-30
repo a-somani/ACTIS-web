@@ -1,6 +1,6 @@
 'use client';
 
-import { Album, CreditCard, History, ImageIcon, Sparkles } from 'lucide-react';
+import { Album, CreditCard, History, Maximize2, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -12,9 +12,9 @@ const sidebarItems = [
     href: '/dashboard/create',
   },
   {
-    title: 'Image Expand',
-    icon: <ImageIcon className="h-6 w-6" />,
-    href: '/dashboard',
+    title: 'Image Upscale',
+    icon: <Maximize2 className="h-6 w-6" />,
+    href: '/dashboard/upscale',
   },
   {
     title: 'Subscriptions',
@@ -51,8 +51,7 @@ export function Sidebar({ className, itemClassName }: SidebarProps) {
               'flex items-center gap-3 rounded-xxs px-4 py-3 text-base dashboard-sidebar-items',
               itemClassName,
               {
-                'dashboard-sidebar-items-active':
-                  item.href === '/dashboard' ? pathname === item.href : pathname.includes(item.href),
+                'dashboard-sidebar-items-active': pathname.startsWith(item.href),
               },
             )}
           >

@@ -2,38 +2,23 @@
 
 import { cn } from '@/lib/utils';
 
-interface RatioOption {
+interface ScaleOption {
   value: string;
   label: string;
 }
 
-interface RatioSelectProps {
+interface ScaleSelectProps {
   value: string;
-  options: RatioOption[];
+  options: ScaleOption[];
   disabled?: boolean;
   onChange: (value: string) => void;
 }
 
-function RatioShape({ ratio }: { ratio: string }) {
-  const [w, h] = ratio.split(':').map(Number);
-  const aspect = w / h;
-  const maxSize = 20;
-  const width = aspect >= 1 ? maxSize : Math.round(maxSize * aspect);
-  const height = aspect >= 1 ? Math.round(maxSize / aspect) : maxSize;
-
-  return (
-    <div
-      className="rounded-[2px] border border-current opacity-60"
-      style={{ width: `${width}px`, height: `${height}px` }}
-    />
-  );
-}
-
-export function RatioSelect({ value, options, disabled = false, onChange }: RatioSelectProps) {
+export function ScaleSelect({ value, options, disabled = false, onChange }: ScaleSelectProps) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-muted-foreground">Output ratio</label>
-      <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Output ratio">
+      <label className="text-sm font-medium text-muted-foreground">Upscale factor</label>
+      <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Upscale factor">
         {options.map((option) => {
           const isActive = option.value === value;
           return (
@@ -53,8 +38,8 @@ export function RatioSelect({ value, options, disabled = false, onChange }: Rati
                   : 'border-border text-muted-foreground',
               )}
             >
-              <RatioShape ratio={option.value} />
-              <span>{option.label}</span>
+              <span className="font-semibold">{option.value}</span>
+              <span>{option.label.replace(`${option.value} — `, '')}</span>
             </button>
           );
         })}

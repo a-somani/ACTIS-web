@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { generateImageRequest } from '@/components/dashboard/image-modifier/generate-image-request';
+import { generateImageRequest } from '@/components/dashboard/create/generate-create-request';
 import { CreateDefaultRatio, CreatePhaseFallbackMessages } from '@/components/dashboard/create/constants';
 import type { CreditSummaryResponse, CreateHistoryItem } from '@/components/dashboard/create/types';
 

@@ -107,19 +107,7 @@ export function CreateWorkbench({
           onActionClick={!isAuthenticated ? onRequireAuth : undefined}
         />
 
-        <div className="mx-auto flex w-full max-w-[760px] flex-col gap-4 xl:max-w-none">
-          <div className="mx-auto grid w-full max-w-[640px] grid-cols-3 gap-2 rounded-[22px] bg-white/[0.04] p-2">
-            {CreateStepItems.map((step, index) => (
-              <div
-                key={step.id}
-                className="rounded-[18px] px-2 py-2 text-center"
-              >
-                <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-primary/90">0{index + 1}</p>
-                <p className="mt-1 text-xs font-semibold text-white md:text-sm">{step.label}</p>
-              </div>
-            ))}
-          </div>
-
+        <div className="mx-auto flex w-full max-w-[760px] flex-col gap-4 xl:max-w-[1280px]">
           <div className="grid gap-4 xl:grid-cols-[220px_minmax(0,1fr)]">
             <aside className="order-2 hidden space-y-3 xl:order-1 xl:block">
               <div className="flex items-center justify-between gap-3">
@@ -154,7 +142,17 @@ export function CreateWorkbench({
               </div>
             </aside>
 
-            <div className="order-1 rounded-[28px] bg-[linear-gradient(180deg,rgba(25,28,39,0.96),rgba(11,13,18,0.98))] xl:order-2">
+            <div className="order-1 flex flex-col gap-4 xl:order-2">
+              <div className="grid w-full grid-cols-3 gap-2 rounded-[22px] bg-white/[0.04] p-2">
+                {CreateStepItems.map((step, index) => (
+                  <div key={step.id} className="rounded-[18px] px-2 py-2 text-center">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-primary/90">0{index + 1}</p>
+                    <p className="mt-1 text-xs font-semibold text-white md:text-sm">{step.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-[28px] bg-[linear-gradient(180deg,rgba(25,28,39,0.96),rgba(11,13,18,0.98))]">
               <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 md:px-5 md:py-4">
                 <div className="flex items-center gap-3">
                   <Sparkles className="h-5 w-5 text-primary" />
@@ -225,6 +223,7 @@ export function CreateWorkbench({
                   onCreateNew={clearForNextCreate}
                 />
               )}
+              </div>
               </div>
             </div>
           </div>
