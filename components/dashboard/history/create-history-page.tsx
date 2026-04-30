@@ -2,18 +2,46 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import dayjs from 'dayjs';
-import { Download, LoaderCircle, SlidersHorizontal, Sparkles, Trash2, X } from 'lucide-react';
+import { ArrowUpFromLine, Download, LoaderCircle, Maximize, SlidersHorizontal, Sparkles, Trash2, X } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 import { deleteCreateGeneration } from '@/app/dashboard/history/actions';
 import { DashboardPageHeader } from '@/components/dashboard/layout/dashboard-page-header';
 import { Button } from '@/components/ui/button';
 import {
   buildCreateGenerationAssetUrl,
   CreateGenerationAssetKind,
+  detectGenerationKind,
+  formatTargetRatioLabel,
+  GenerationKind,
   type CreateGenerationRecord,
 } from '@/utils/create-generations';
+
+interface KindBadgeProps {
+  kind: GenerationKind;
+  size?: 'sm' | 'md';
+}
+
+function KindBadge({ kind, size = 'sm' }: KindBadgeProps) {
+  const isUpscale = kind === GenerationKind.Upscale;
+  const Icon = isUpscale ? ArrowUpFromLine : Maximize;
+  const sizes = size === 'md' ? 'h-7 w-7 [&>svg]:h-3.5 [&>svg]:w-3.5' : 'h-6 w-6 [&>svg]:h-3 [&>svg]:w-3';
+  return (
+    <span
+      className={cn(
+        'pointer-events-none absolute left-2 top-2 flex items-center justify-center rounded-full backdrop-blur',
+        sizes,
+        isUpscale ? 'bg-violet-500/85 text-white' : 'bg-primary/85 text-primary-foreground',
+      )}
+      aria-label={isUpscale ? 'Upscale' : 'Expand'}
+      title={isUpscale ? 'Upscale' : 'Expand'}
+    >
+      <Icon />
+    </span>
+  );
+}
 
 interface Props {
   records: CreateGenerationRecord[];
@@ -37,8 +65,13 @@ function EmptyState() {
 }
 
 function HistoryTile(props: { record: CreateGenerationRecord; onOpen: () => void }) {
+  const kind = detectGenerationKind(props.record.target_ratio);
   return (
-    <button type="button" onClick={props.onOpen} className="block w-full overflow-hidden rounded-[22px] bg-white/[0.03] text-left transition-transform hover:-translate-y-0.5">
+    <button
+      type="button"
+      onClick={props.onOpen}
+      className="relative block w-full overflow-hidden rounded-[22px] bg-white/[0.03] text-left transition-transform hover:-translate-y-0.5"
+    >
       <Image
         src={buildCreateGenerationAssetUrl({
           generationId: props.record.id,
@@ -51,6 +84,7 @@ function HistoryTile(props: { record: CreateGenerationRecord; onOpen: () => void
         className="aspect-square w-full object-cover"
         loading="lazy"
       />
+      <KindBadge kind={kind} />
     </button>
   );
 }
@@ -75,7 +109,7 @@ function HistoryLightbox(props: {
         </button>
 
         <div className="space-y-5 rounded-[28px] bg-[linear-gradient(180deg,rgba(25,28,39,0.98),rgba(11,13,18,0.99))] p-4 pb-6 shadow-2xl">
-          <div className="overflow-hidden rounded-[22px] bg-black/20">
+          <div className="relative overflow-hidden rounded-[22px] bg-black/20">
             <img
               src={buildCreateGenerationAssetUrl({
                 generationId: props.record.id,
@@ -84,12 +118,13 @@ function HistoryLightbox(props: {
               alt={props.record.source_file_name}
               className="max-h-[56vh] w-full object-contain"
             />
+            <KindBadge kind={detectGenerationKind(props.record.target_ratio)} size="md" />
           </div>
 
           <div className="space-y-1 text-center">
             <p className="text-sm font-medium text-white">{props.record.source_file_name}</p>
             <p className="text-xs uppercase tracking-[0.24em] text-white/45">
-              {props.record.target_ratio} · {dayjs(props.record.created_at).format('MMM D, YYYY')}
+              {formatTargetRatioLabel(props.record.target_ratio)} · {dayjs(props.record.created_at).format('MMM D, YYYY')}
             </p>
           </div>
 

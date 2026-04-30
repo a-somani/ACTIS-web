@@ -129,13 +129,20 @@ export function UpscaleWorkbench({
                       key={item.id}
                       type="button"
                       onClick={() => restoreHistoryItem(item)}
-                      className="overflow-hidden rounded-[24px] bg-white/[0.04] p-1 transition-transform hover:-translate-y-0.5"
+                      className="relative overflow-hidden rounded-[24px] bg-white/[0.04] p-1 transition-transform hover:-translate-y-0.5"
                     >
                       <img
                         src={item.resultImage}
                         alt={item.fileName}
                         className="aspect-square w-full rounded-[20px] object-cover"
                       />
+                      <span
+                        className="pointer-events-none absolute left-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-violet-500/85 text-white backdrop-blur"
+                        aria-label="Upscale"
+                        title="Upscale"
+                      >
+                        <ArrowUpFromLine className="h-3 w-3" />
+                      </span>
                     </button>
                   ))
                 )}

@@ -76,3 +76,22 @@ export function buildCreateGenerationDownloadName(record: Pick<CreateGenerationR
   const ratioSuffix = record.target_ratio.replace(':', 'x');
   return `${safeBaseName || 'actis-create'}-${ratioSuffix}`;
 }
+
+export const GenerationKind = {
+  Expand: 'expand',
+  Upscale: 'upscale',
+} as const;
+
+export type GenerationKind = (typeof GenerationKind)[keyof typeof GenerationKind];
+
+export function detectGenerationKind(targetRatio: string | null | undefined): GenerationKind {
+  return (targetRatio ?? '').startsWith('upscale-') ? GenerationKind.Upscale : GenerationKind.Expand;
+}
+
+export function formatTargetRatioLabel(targetRatio: string | null | undefined): string {
+  const value = targetRatio ?? '';
+  if (value.startsWith('upscale-')) {
+    return `Upscale · ${value.slice('upscale-'.length)}`;
+  }
+  return value || 'Expand';
+}
