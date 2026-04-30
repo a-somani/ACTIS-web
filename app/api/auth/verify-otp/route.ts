@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   const body = (await request.json()) as RequestBody;
   const result = await verifyEmailOtp({ email: body.email ?? '', token: body.token ?? '' });
 
-  if (result.error) {
+  if ('error' in result) {
     return Response.json(result, { status: 400 });
   }
 
