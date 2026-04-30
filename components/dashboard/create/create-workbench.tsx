@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { HelpCircle, Sparkles } from 'lucide-react';
+import { HelpCircle, Maximize } from 'lucide-react';
 import Link from 'next/link';
 import { CreateBackground } from '@/components/dashboard/create/create-background';
 import { CreateBestPracticesDialog } from '@/components/dashboard/create/create-best-practices-dialog';
@@ -155,8 +155,8 @@ export function CreateWorkbench({
               <div className="rounded-[28px] bg-[linear-gradient(180deg,rgba(25,28,39,0.96),rgba(11,13,18,0.98))]">
               <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 md:px-5 md:py-4">
                 <div className="flex items-center gap-3">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  <p className="text-base font-semibold md:text-lg">ACTIS Create</p>
+                  <Maximize className="h-5 w-5 text-primary" />
+                  <p className="text-base font-semibold md:text-lg">ACTIS Expand</p>
                 </div>
 
                 <CreateBestPracticesDialog>

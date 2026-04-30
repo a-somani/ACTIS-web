@@ -3,11 +3,10 @@
 import { useState } from 'react';
 import { AuthDialog, type AuthDialogMode } from '@/components/authentication/auth-dialog';
 import { CreateWorkbench } from '@/components/dashboard/create/create-workbench';
+import { DashboardLayout } from '@/components/dashboard/layout/dashboard-layout';
 import type { CreditSummaryResponse } from '@/components/dashboard/create/types';
 import { useAuth } from '@/contexts/auth-context';
 import '../../styles/home-page.css';
-import Header from '@/components/home/header/header';
-import { HomePageBackground } from '@/components/gradients/home-page-background';
 
 interface HomePageProps {
   initialCredits?: CreditSummaryResponse | null;
@@ -28,23 +27,17 @@ export function HomePage({ initialCredits = null, initialIsAuthenticated = false
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      <HomePageBackground />
-      <Header
-        user={user}
-        onOpenLogin={() => openAuthDialog('login', '/')}
-        onOpenSignup={() => openAuthDialog('signup', '/')}
-        showMarketingLinks={false}
-        isAuthenticatedOverride={loading && initialIsAuthenticated}
-      />
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-3 pb-4 pt-2 md:px-5 md:pb-8 md:pt-4">
-        <CreateWorkbench
-          initialCredits={initialCredits}
-          isAuthenticated={isAuthenticated}
-          onRequireAuth={() => openAuthDialog('signup', '/')}
-          showDashboardChrome={false}
-        />
-      </main>
+    <>
+      <DashboardLayout>
+        <main className="mx-auto w-full max-w-[1600px] p-3 md:p-6">
+          <CreateWorkbench
+            initialCredits={initialCredits}
+            isAuthenticated={isAuthenticated}
+            onRequireAuth={() => openAuthDialog('signup', '/')}
+            showDashboardChrome={true}
+          />
+        </main>
+      </DashboardLayout>
       <AuthDialog
         open={authDialogOpen}
         mode={authDialogMode}
@@ -52,6 +45,6 @@ export function HomePage({ initialCredits = null, initialIsAuthenticated = false
         onOpenChange={setAuthDialogOpen}
         onModeChange={setAuthDialogMode}
       />
-    </div>
+    </>
   );
 }

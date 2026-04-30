@@ -1,11 +1,18 @@
-import { ImageUpscalerWorkbench } from '@/components/dashboard/image-upscaler/image-upscaler-workbench';
-import { DashboardPageHeader } from '@/components/dashboard/layout/dashboard-page-header';
+import { UpscaleWorkbench } from '@/components/dashboard/image-upscaler/upscale-workbench';
+import { syncCreditsForUser } from '@/utils/credits-server';
+import { createClient } from '@/utils/supabase/server';
 
-export default function DashboardUpscalePage() {
+export default async function DashboardUpscalePage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const initialCredits = user ? await syncCreditsForUser(user) : null;
+
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-4 p-4 lg:gap-6 lg:p-8">
-      <DashboardPageHeader pageTitle="Image Upscale" />
-      <ImageUpscalerWorkbench />
+    <main className="mx-auto w-full max-w-[1600px] p-3 md:p-6">
+      <UpscaleWorkbench initialCredits={initialCredits} />
     </main>
   );
 }

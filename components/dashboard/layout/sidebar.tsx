@@ -1,20 +1,22 @@
 'use client';
 
-import { Album, CreditCard, History, Maximize2, Sparkles } from 'lucide-react';
+import { Album, ArrowUpFromLine, CreditCard, History, Maximize } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const sidebarItems = [
   {
-    title: 'Create',
-    icon: <Sparkles className="h-6 w-6" />,
+    title: 'Image Expand',
+    icon: <Maximize className="h-6 w-6" />,
     href: '/dashboard/create',
+    accent: 'expand' as const,
   },
   {
     title: 'Image Upscale',
-    icon: <Maximize2 className="h-6 w-6" />,
+    icon: <ArrowUpFromLine className="h-6 w-6" />,
     href: '/dashboard/upscale',
+    accent: 'upscale' as const,
   },
   {
     title: 'Subscriptions',
