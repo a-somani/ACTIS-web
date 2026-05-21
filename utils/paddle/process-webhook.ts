@@ -9,7 +9,15 @@ import {
   SubscriptionPausedEvent,
   SubscriptionResumedEvent,
   TransactionCompletedEvent,
+  TransactionBilledEvent,
+  TransactionCreatedEvent,
+  TransactionUpdatedEvent,
+  TransactionRevisedEvent,
+  TransactionReadyEvent,
   TransactionPaidEvent,
+  TransactionCanceledEvent,
+  TransactionPastDueEvent,
+  TransactionPaymentFailedEvent,
   SubscriptionUpdatedEvent,
 } from '@paddle/paddle-node-sdk';
 import { grantCreditsForTransaction } from '@/utils/credits-server';
@@ -24,10 +32,26 @@ type SubscriptionEvent =
   | SubscriptionResumedEvent
   | SubscriptionActivatedEvent;
 
-type TransactionEvent = TransactionCompletedEvent | TransactionPaidEvent;
+type TransactionEvent =
+  | TransactionCreatedEvent
+  | TransactionReadyEvent
+  | TransactionBilledEvent
+  | TransactionPaidEvent
+  | TransactionCompletedEvent
+  | TransactionUpdatedEvent
+  | TransactionRevisedEvent
+  | TransactionPastDueEvent
+  | TransactionPaymentFailedEvent
+  | TransactionCanceledEvent;
+
+const CreditGrantableTransactionStatuses = new Set(['billed', 'paid', 'completed']);
 
 export class ProcessWebhook {
   async processEvent(eventData: EventEntity) {
+    log.info('Processing webhook event', {
+      event: eventData.eventType,
+    });
+
     switch (eventData.eventType) {
       case EventName.SubscriptionCreated:
       case EventName.SubscriptionUpdated:
@@ -43,6 +67,14 @@ export class ProcessWebhook {
         break;
       case EventName.TransactionCompleted:
       case EventName.TransactionPaid:
+      case EventName.TransactionBilled:
+      case EventName.TransactionUpdated:
+      case EventName.TransactionRevised:
+      case EventName.TransactionCreated:
+      case EventName.TransactionReady:
+      case EventName.TransactionPastDue:
+      case EventName.TransactionPaymentFailed:
+      case EventName.TransactionCanceled:
         await this.grantTransactionCredits(eventData);
         break;
       default:
@@ -105,6 +137,23 @@ export class ProcessWebhook {
 
   private async grantTransactionCredits(eventData: TransactionEvent) {
     try {
+      const transactionStatus = eventData.data.status;
+      log.info('Evaluating transaction event for credit grant', {
+        transactionId: eventData.data.id,
+        status: transactionStatus,
+        event: eventData.eventType,
+        customerId: eventData.data.customerId,
+      });
+
+      if (!CreditGrantableTransactionStatuses.has(transactionStatus)) {
+        log.info('Skipping transaction credit grant for status', {
+          transactionId: eventData.data.id,
+          status: transactionStatus,
+          event: eventData.eventType,
+        });
+        return;
+      }
+
       await grantCreditsForTransaction({
         customerId: eventData.data.customerId,
         transactionId: eventData.data.id,

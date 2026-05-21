@@ -13,11 +13,23 @@ export function SubscriptionsBillingSync() {
       return;
     }
 
-    router.refresh();
+    const runBillingSync = async () => {
+      try {
+        await fetch('/api/credits?trigger=billing-success', {
+          method: 'GET',
+          cache: 'no-store',
+          credentials: 'include',
+        });
+      } finally {
+        router.refresh();
+      }
+    };
+
+    void runBillingSync();
 
     const syncTimers = [1500, 3500, 6500, 10000].map((delay) =>
       window.setTimeout(() => {
-        router.refresh();
+        void runBillingSync();
       }, delay),
     );
     const cleanupTimer = window.setTimeout(() => {
